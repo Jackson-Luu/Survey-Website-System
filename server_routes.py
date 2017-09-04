@@ -16,7 +16,7 @@ def survey_homepage():
 		
 		if check_password(username, password):
 			return redirect(url_for('admin'))
-	return render_template("ui.html")
+	return render_template("templates/ui.html")
 
 
 def check_password(user_name, password):
@@ -30,4 +30,4 @@ def check_password(user_name, password):
 
 @app.route("/admin")
 def admin():
-	return render_template("admin.html")
+	return render_template("templates/admin.html")
