@@ -23,7 +23,7 @@ class Survey:
         self.list_of_q = list_of_q
         self.render_template = []
 
-    def show_questions(self):
+    def compile_questions(self):
         """ Render the question to the user by forming the HTML in here
         """
 
@@ -73,3 +73,7 @@ class Survey:
             """.format(q_text=question.get_text(), q_area=input_area)
 
             self.render_template.append(template)
+
+    def get_rendered_template(self):
+        """ Return the compiled template """
+        return self.render_template
