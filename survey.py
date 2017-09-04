@@ -1,5 +1,6 @@
 """
-    This file will handle the survey object
+    This file will handle the survey object. The survey object will
+    just handle the rendering of one particular survey.
     Version 0.0.1
     The following features that need to be implemented:
         - Split the questions into different web pages when there are
