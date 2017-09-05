@@ -12,22 +12,22 @@ USERS = {"admin":"password"}
 def survey_homepage():
     """ The function to render the homepage
     """
-    def check_password(user_name, password):
-        """
-        :param user_name: The name of the user
-        :param password: Password provided by the user
-        """
-        if user_name in USERS:
-            if password == USERS[user_name]:
-                return True
-
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-    if check_password(username, password):
-        return redirect(url_for('admin'))
+        if check_password(username, password):
+            return redirect(url_for('admin'))
     return render_template("ui.html")
+
+def check_password(user_name, password):
+    """
+    :param user_name: The name of the user
+    :param password: Password provided by the user
+    """
+    if user_name in USERS:
+        if password == USERS[user_name]:
+            return True
 
 @APP.route("/admin", methods=["GET", "POST"])
 def admin():
