@@ -15,6 +15,7 @@ class SurveySystem:
 
     def get_survey_template(self, survey_id):
         """ Return the survey requested """
+        survey_id = int(survey_id)
         return self.surveys[survey_id].get_rendered_template()
 
     def get_survey_modifiable(self, survey_id):
@@ -55,6 +56,9 @@ class SurveySystem:
     def add_question(self, survey_name, obj_q):
         survey_id = self.surveys_map[survey_name]
         self.surveys[survey_id].add_question(obj_q)
+
+    def mod_question(self, survey_id, q_id, obj_q):
+        self.surveys[survey_id].modify_question(q_id, obj_q)
 
     def load_unique_id(self):
         """ TODO: Add code for this section. It is a stub right now

@@ -23,8 +23,6 @@ class Survey:
     """
     def __init__(self):
         self.list_of_q = []
-        self.render_template = ""
-        self.modify_template = ""
 
     def add_question(self, obj_q):
         """ Add a question to the survey """
@@ -37,6 +35,8 @@ class Survey:
     def get_rendered_template(self):
         """ Render the question to the user by forming the HTML in here
         """
+        render_template = ""
+        q_counter = 0
 
         for question in self.list_of_q:
             """ We are first going to load the queston text into the
@@ -47,8 +47,7 @@ class Survey:
 
             if question.get_type() == QuestionType.TEXT:
                 input_area = """
-                    <textarea class='q_textinput' name='q_user_input'>
-                        Please enter our input here ...
+                    <textarea class='q_textinput' name='q_user_input'>Please enter our input here ...
                     </textarea>
                 """
             elif question.get_type() == QuestionType.MULT:
@@ -73,22 +72,28 @@ class Survey:
                     radio_counter += 1
 
             template = """
-                <fieldset class='q_box'>
+                <form class='q_box'>
+                    <p>Question ID: {q_id}</p>
                     <div class='q_text'>
                         {q_text}
                     </div>
                     <div class='q_area'>
                         {q_area}
                     </div>
-                </fieldset>
-            """.format(q_text=question.get_text(), q_area=input_area)
+                    <input type='submit' name='btn_change' value='{q_id}'>Submit
+                    <input type='submit' name='btn_sub' value='Return'/>
+                    </input>
+                </form>
+            """.format(q_id=q_counter, q_text=question.get_text(), q_area=input_area)
 
-            self.render_template += template
-        return self.render_template
+            q_counter += 1
+            render_template += template
+        return render_template
 
     def get_modify_template(self):
         """ Get the survey that is able to be modified by the admin
         """
+        modify_template = ""
 
         for question in self.list_of_q:
             """ We are first going to load the queston text into the
@@ -97,35 +102,35 @@ class Survey:
 
             input_area = ""
 
-            print(question.get_type())
-
             if question.get_type() == QuestionType.MULT:
                 input_area = """
                     <p class='sub_title'>Question Type:</p>
                     <div>
-                        Multiple Choice<input type='radio' name='mult' checked='checked'/><br/>
-                        Text Based<input type='radio' name='text'/>
+                        Multiple Choice<input type='radio' name='s_type' value='mult' checked='checked'/><br/>
+                        Text Based<input type='radio' name='s_type' value='text'/>
                     </div>
                 """
             elif question.get_type() == QuestionType.TEXT:
                 input_area = """
                     <p>Question Type:</p>
                     <div>
-                        Multiple Choice<input type='radio' name='mult'/><br/>
-                        Text Based<input type='radio' name='text'checked='checked'/>
+                        Multiple Choice<input type='radio' name='s_type' value='mult'/><br/>
+                        Text Based<input type='radio' name='s_type' value='text' checked='checked'/>
                     </div>
                 """
 
             template = """
-                <fieldset class='q_box'>
+                <form class='q_box'>
                     <div class='q_text'>
                         Question: <input type='text' name='the_question' value='{q_text}'/>
                     </div>
                     <div class='q_area'>
                         {q_area}
                     </div>
-                </fieldset>
+                </form>
+                <input type='submit' name='btn_sub' value='Submit'/>
+                <input type='submit' name='btn_sub' value='Return'/>
             """.format(q_text=question.get_text(), q_area=input_area)
 
-            self.modify_template += template
-        return self.modify_template
+            modify_template += template
+        return modify_template

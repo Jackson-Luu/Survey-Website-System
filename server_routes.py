@@ -2,6 +2,7 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 from server_system import SurveySystem
 from server import APP, G_SURVEY_SYSTEM
+from question import Question
 import csv
 
 # Create a dictionary and initialize ?admin? as a key with
@@ -25,8 +26,8 @@ def survey_homepage():
         username = request.form["username"]
         password = request.form["password"]
 
-    if check_password(username, password):
-        return redirect(url_for('admin'))
+        if check_password(username, password):
+            return redirect(url_for('admin'))
     return render_template("ui.html")
 
 @APP.route("/admin", methods=["GET", "POST"])
@@ -41,9 +42,23 @@ def admin():
     to_be_rendered = G_SURVEY_SYSTEM.get_survey_list()
     return render_template("admin.html", render_test=to_be_rendered)
 
-@APP.route("/admin/<survey_id>")
+@APP.route("/admin/<survey_id>", methods=["GET", "POST"])
 def admin_survey(survey_id):
+    """ The survey but modifiable for the admin
+    """
+
+    if request.method == "POST":
+        request_value = request.form["btn_sub"]
+        if request_value == "Return":
+            return redirect(url_for('admin'))
+        elif request_value == "Submit":
+
+    to_be_rendered = G_SURVEY_SYSTEM.get_survey_modifiable(survey_id)
+    return render_template("admin.html", render_test=to_be_rendered)
+
+@APP.route("/survey/<survey_id>")
+def show_survey(survey_id):
     """ Direct link to a survey
     """
-    to_be_rendered = G_SURVEY_SYSTEM.get_survey_modifiable(survey_id)
+    to_be_rendered = G_SURVEY_SYSTEM.get_survey_template(survey_id)
     return render_template("admin.html", render_test=to_be_rendered)
