@@ -52,6 +52,10 @@ class SurveySystem:
         self.surveys[s_uni_id] = s_obj
         self.surveys_map[name] = s_uni_id
 
+    def add_question(self, survey_name, obj_q):
+        survey_id = self.surveys_map[survey_name]
+        self.surveys[survey_id].add_question(obj_q)
+
     def load_unique_id(self):
         """ TODO: Add code for this section. It is a stub right now
             using a random number generator. Not reliable

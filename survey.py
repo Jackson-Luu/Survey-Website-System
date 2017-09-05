@@ -23,13 +23,11 @@ class Survey:
     """
     def __init__(self):
         self.list_of_q = []
-        self.render_template = []
-        self.modify_template = []
+        self.render_template = ""
+        self.modify_template = ""
 
-    def add_question(self, q_text):
+    def add_question(self, obj_q):
         """ Add a question to the survey """
-        obj_q = Question(q_text)
-        obj_q.set_type(QuestionType.NULL)
         self.list_of_q.append(obj_q)
 
     def modify_question(self, q_id, question):
@@ -85,7 +83,7 @@ class Survey:
                 </fieldset>
             """.format(q_text=question.get_text(), q_area=input_area)
 
-            self.render_template.append(template)
+            self.render_template += template
         return self.render_template
 
     def get_modify_template(self):
@@ -97,27 +95,31 @@ class Survey:
                 template
             """
 
+            input_area = ""
+
+            print(question.get_type())
+
             if question.get_type() == QuestionType.MULT:
                 input_area = """
-                    <p>Question Type:</p>
+                    <p class='sub_title'>Question Type:</p>
                     <div>
-                        <input type='radio' name='mult' value='Multiple Choice' checked='checked'/>
-                        <input type='radio' name='text' value='Text Based'/>
+                        Multiple Choice<input type='radio' name='mult' checked='checked'/><br/>
+                        Text Based<input type='radio' name='text'/>
                     </div>
                 """
             elif question.get_type() == QuestionType.TEXT:
                 input_area = """
                     <p>Question Type:</p>
                     <div>
-                        <input type='radio' name='mult' value='Multiple Choice'/>
-                        <input type='radio' name='text' value='Text Based' checked='checked'/>
+                        Multiple Choice<input type='radio' name='mult'/><br/>
+                        Text Based<input type='radio' name='text'checked='checked'/>
                     </div>
                 """
 
             template = """
                 <fieldset class='q_box'>
                     <div class='q_text'>
-                        <input type='text' name='the_question' value='{q_text}'/>
+                        Question: <input type='text' name='the_question' value='{q_text}'/>
                     </div>
                     <div class='q_area'>
                         {q_area}
@@ -125,5 +127,5 @@ class Survey:
                 </fieldset>
             """.format(q_text=question.get_text(), q_area=input_area)
 
-            self.modify_template.append(template)
+            self.modify_template += template
         return self.modify_template
