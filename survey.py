@@ -21,14 +21,42 @@ class Survey:
         Also in the constructor, we will set a list to store the HTML
         needed to render the questions.
     """
-    def __init__(self):
+    def __init__(self, s_id, name):
         self.list_of_q = []
+        self.answers = []
         self.render_template = ""
         self.modify_template = ""
+        self.id = s_id
+        self.name = name
 
-    def add_question(self, obj_q):
-        """ Add a question to the survey """
-        self.list_of_q.append(obj_q)
+    #def add_question(self, obj_q):
+    #    """ Add a question to the survey """
+    #    self.list_of_q.append(obj_q)
+
+    def add_question(self, question):
+        self.list_of_q.append(question)
+        if int(question.get_type()) == 1:
+            self.answers.append([0]*5)
+        else:
+            self.answers.append([0]*2)
+
+    def get_name(self):
+        return self.name
+
+    def get_questions(self):
+        return self.list_of_q
+
+    def get_id(self):
+        return self.id
+
+    def num_questions(self):
+        return len(self.list_of_q)
+
+    def get_answers(self):
+        return self.answers
+
+    def set_answers(self, answers):
+        self.answers = answers
 
     def modify_question(self, q_id, question):
         """ Modify the question stored in the survey """
