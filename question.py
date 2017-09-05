@@ -6,10 +6,11 @@ from global_api import QuestionType
 
 class Question:
     """ The question object """
-    def __init__(self, q_type, q_text, q_ans):
-        self.q_type = q_type # What type of question is it? Text based or multiple choice base
+    def __init__(self, q_text):
         self.q_text = q_text # The question itself. E.G "What is your favourite dog"
-        self.q_ans = q_ans   # The answers available for the questions. This should be a list!
+        # Set the type of question it is
+        self.q_type = QuestionType.NULL
+        self.q_ans = []      # The answers available for the questions.
 
     def get_type(self):
         """ Return the type of question """
@@ -25,11 +26,15 @@ class Question:
         """ Returns the question """
         return self.q_text
 
-    def add_ans(self):
+    def add_ans(self, s_ans):
         """ Adds a possible answer """
-        # TODO: Add code for this
-        return # Delete after finished
+        self.q_ans.append(s_ans)
+        return
 
     def set_type(self, q_type):
         """ Sets the type of question """
         self.q_type = q_type
+
+    def set_text(self, q_text):
+        """ Sets the question """
+        self.q_text = q_text

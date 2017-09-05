@@ -9,6 +9,7 @@ class QuestionType(Enum):
     """ This is is just to standarise the question types across the
         files.
     """
-    TEXT = 0 # The question is text based
-    MULT = 1 # The question is multiple choice based
-    DROP = 2 # The question is drop down based
+    NULL = -1 # Question type not set
+    TEXT =  0 # The question is text based
+    MULT =  1 # The question is multiple choice based
+    DROP =  2 # The question is drop down based

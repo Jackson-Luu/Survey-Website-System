@@ -1,6 +1,6 @@
 """
     This python file will simply run the server
 """
-from server_routes import app
+from server_routes import APP
 
-app.run(debug=True)
+APP.run(debug=True)

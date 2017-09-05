@@ -7,6 +7,7 @@
           a lot of them
 """
 from global_api import QuestionType
+from question import Question
 
 class Survey:
     """ The survey class will allow the creation of modular surveys
@@ -20,11 +21,22 @@ class Survey:
         Also in the constructor, we will set a list to store the HTML
         needed to render the questions.
     """
-    def __init__(self, list_of_q):
-        self.list_of_q = list_of_q
+    def __init__(self):
+        self.list_of_q = []
         self.render_template = []
+        self.modify_template = []
 
-    def compile_questions(self):
+    def add_question(self, q_text):
+        """ Add a question to the survey """
+        obj_q = Question(q_text)
+        obj_q.set_type(QuestionType.NULL)
+        self.list_of_q.append(obj_q)
+
+    def modify_question(self, q_id, question):
+        """ Modify the question stored in the survey """
+        self.list_of_q[q_id] = question
+
+    def get_rendered_template(self):
         """ Render the question to the user by forming the HTML in here
         """
 
@@ -37,7 +49,7 @@ class Survey:
 
             if question.get_type() == QuestionType.TEXT:
                 input_area = """
-                    <textarea class='q_textinput'>
+                    <textarea class='q_textinput' name='q_user_input'>
                         Please enter our input here ...
                     </textarea>
                 """
@@ -74,7 +86,44 @@ class Survey:
             """.format(q_text=question.get_text(), q_area=input_area)
 
             self.render_template.append(template)
-
-    def get_rendered_template(self):
-        """ Return the compiled template """
         return self.render_template
+
+    def get_modify_template(self):
+        """ Get the survey that is able to be modified by the admin
+        """
+
+        for question in self.list_of_q:
+            """ We are first going to load the queston text into the
+                template
+            """
+
+            if question.get_type() == QuestionType.MULT:
+                input_area = """
+                    <p>Question Type:</p>
+                    <div>
+                        <input type='radio' name='mult' value='Multiple Choice' checked='checked'/>
+                        <input type='radio' name='text' value='Text Based'/>
+                    </div>
+                """
+            elif question.get_type() == QuestionType.TEXT:
+                input_area = """
+                    <p>Question Type:</p>
+                    <div>
+                        <input type='radio' name='mult' value='Multiple Choice'/>
+                        <input type='radio' name='text' value='Text Based' checked='checked'/>
+                    </div>
+                """
+
+            template = """
+                <fieldset class='q_box'>
+                    <div class='q_text'>
+                        <input type='text' name='the_question' value='{q_text}'/>
+                    </div>
+                    <div class='q_area'>
+                        {q_area}
+                    </div>
+                </fieldset>
+            """.format(q_text=question.get_text(), q_area=input_area)
+
+            self.modify_template.append(template)
+        return self.modify_template
