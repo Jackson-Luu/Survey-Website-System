@@ -18,49 +18,6 @@ class SurveySystem:
         self.admins = {}
         self.curr_admin = None
 
-    def get_survey_template(self, survey_id):
-        """ Return the survey requested """
-        return self.surveys[survey_id].get_rendered_template()
-
-    def get_survey_modifiable(self, survey_id):
-        """ Return the modifiable version of the survey requested """
-        survey_id = int(survey_id)
-        return self.surveys[survey_id].get_modify_template()
-
-    def get_survey_list(self):
-        """ Get the list of surveys available
-        """
-
-        html_template = """
-            <div>
-                <select name='survey_selection'>
-        """
-
-        for key in self.surveys_map:
-            html_template += """
-                <option value='{survey_id}'>{survey_name}</option>
-            """.format(survey_id=self.surveys_map[key], survey_name=key)
-
-        html_template += """
-                </select>
-                <input type='submit' name='chose_survey' value='Select'/>
-            </div>
-        """
-
-        return html_template
-
-    def add_survey(self, name):
-        """ Adds a survey to the system """
-        #s_obj = Survey()
-        s_uni_id = self.load_unique_id()
-
-        #self.surveys[s_uni_id] = s_obj
-        self.surveys_map[name] = s_uni_id
-
-    def add_question(self, survey_name, obj_q):
-        survey_id = self.surveys_map[survey_name]
-        #self.surveys[survey_id].add_question(obj_q)
-
     def get_surveys(self):
         s_list = []
         for s in self.admins[self.curr_admin].get_surveys():
