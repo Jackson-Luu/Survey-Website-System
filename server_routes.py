@@ -87,6 +87,7 @@ def show_survey(survey_id):
                 for x in range(0, num_q):
                     foo = request.form["q_user_input_" + str(x)]
                     responsewriter = csv.writer(csvfile)
+                    DSOFUSOIFSDOFDPOIIFHDFOFSD
                     responsewriter.writerow([foo])
             return redirect(url_for('survey_complete'))
 
