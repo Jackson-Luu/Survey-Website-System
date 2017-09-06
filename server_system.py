@@ -21,7 +21,7 @@ class SurveySystem:
     def get_survey_modifiable(self, survey_id):
         """ Return the modifiable version of the survey requested """
         survey_id = int(survey_id)
-        return self.surveys[survey_id].get_modify_template()
+        return self.surveys[survey_id].get_modify_template(survey_id)
 
     def get_survey_list(self):
         """ Get the list of surveys available
@@ -58,7 +58,12 @@ class SurveySystem:
         self.surveys[survey_id].add_question(obj_q)
 
     def mod_question(self, survey_id, q_id, obj_q):
+        survey_id = int(survey_id)
         self.surveys[survey_id].modify_question(q_id, obj_q)
+
+    def get_num_question(self, survey_id):
+        survey_id = int(survey_id)
+        return self.surveys[survey_id].get_num_question()
 
     def load_unique_id(self):
         """ TODO: Add code for this section. It is a stub right now

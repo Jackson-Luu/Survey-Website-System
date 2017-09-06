@@ -3,6 +3,7 @@ from flask import Flask, flash, redirect, render_template, request, url_for
 from server_system import SurveySystem
 from server import APP, G_SURVEY_SYSTEM
 from question import Question
+from global_api import QuestionType
 import csv
 
 # Create a dictionary and initialize ?admin? as a key with
@@ -46,19 +47,35 @@ def admin():
 def admin_survey(survey_id):
     """ The survey but modifiable for the admin
     """
-
     if request.method == "POST":
         request_value = request.form["btn_sub"]
         if request_value == "Return":
             return redirect(url_for('admin'))
         elif request_value == "Submit":
+            num_q = G_SURVEY_SYSTEM.get_num_question(survey_id)
+            for x in range(0, num_q):
+                nvn0 = request.form["the_question_" + str(x)]
+
+                nvn2 = Question(nvn0)
+                nvn2.set_type(QuestionType.TEXT)
+                G_SURVEY_SYSTEM.mod_question(survey_id, x, nvn2)
 
     to_be_rendered = G_SURVEY_SYSTEM.get_survey_modifiable(survey_id)
     return render_template("admin.html", render_test=to_be_rendered)
 
-@APP.route("/survey/<survey_id>")
+@APP.route("/survey/<survey_id>", methods=["GET", "POST"])
 def show_survey(survey_id):
     """ Direct link to a survey
     """
+    if request.method == "POST":
+        request_value = request.form["btn_sub"]
+        if request_value == "Submit":
+            with open('storage/response.csv', 'a') as csvfile:
+                num_q = G_SURVEY_SYSTEM.get_num_question(survey_id)
+                for x in range(0, num_q):
+                    foo = request.form["q_user_input_" + str(x)]
+                    responsewriter = csv.writer(csvfile)
+                    responsewriter.writerow([foo])
+
     to_be_rendered = G_SURVEY_SYSTEM.get_survey_template(survey_id)
     return render_template("admin.html", render_test=to_be_rendered)
