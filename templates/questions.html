@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+    <head>
+    <title> Questions </title>
+    </head>
+	<body>
+		<h1> Questions <h1>
+   	    {% if q_bank %}
+    		{% for q in q_bank %}
+      			<h2> {{ q.q_text }} </h2>
+	 				{% if q.q_type|int() == 0 %}
+						Question Type: Yes/No 
+					{% elif q.q_type|int() == 1 %}
+						Question Type: Agree/Disagree 
+					{% else %}
+						Question Type: Other
+					{% endif %}
+      {% endfor %}
+      {%else%}
+      No questions available.
+      {% endif %}
+   </body>
+   </html>

@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+    <head>
+    <title> View Surveys </title>
+    </head>
+	<body>
+        <h1> Surveys </h1>
+        {% if surveys %}
+            {% for s in surveys %}
+            	<h3>Survey Name: {{s[0]}}, Survey Link: {{s[1]}}{{s[2]}}</h3>
+            {% endfor %}
+        {% endif %}
+   </body>
+</html>

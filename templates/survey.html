@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+    <head>
+    <title> Questions </title>
+    </head>
+	<body>
+		<Form method="POST">
+		<h1> Questions <h1>
+   	    {% if q_bank %}
+    		{% for q in q_bank %}
+      			<h2> {{ q.q_text }} </h2>
+	 				{% if q.q_type|int() == 0 %}
+						Question Type: Yes/No 
+					{% elif q.q_type|int() == 1 %}
+						Question Type: Agree/Disagree 
+					{% else %}
+						Question Type: Other
+					{% endif %}
+					<button name="btn" value="{{loop.index}}"> Add </button>
+      		{% endfor %}
+      	{%else%}
+      		No questions available.
+      	{% endif %}
+        <br></br>
+        <input name="s_name" placeholder="Enter a survey name."></input>
+		<button name="btn" value="done"> Done - Create Survey </button>
+		</Form>
+   </body>
+</html>

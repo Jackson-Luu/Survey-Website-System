@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+    <title> Survey </title>
+    </head>
+	<body>
+		<Form method="POST">
+		<h1> Survey <h1>
+   	    {% if q_bank %}
+    		{% for q in q_bank %}
+      			<h2> {{ q.q_text }} </h2>
+	 				{% if q.q_type|int() == 0 %}
+						<input type="radio" name="{{loop.index}}" value=0> Yes </input>
+                        <input type="radio" name="{{loop.index}}" value=1> No </input>
+					{% elif q.q_type|int() == 1 %}
+						<input type="radio" name="{{loop.index}}" value=0> Strongly Disagree </input>
+                        <input type="radio" name="{{loop.index}}" value=1> Disagree </input>
+                        <input type="radio" name="{{loop.index}}" value=2> Neutral </input>
+						<input type="radio" name="{{loop.index}}" value=3> Agree </input>
+						<input type="radio" name="{{loop.index}}" value=4> Strongly Agree </input>
+					{% else %}
+						<input type="radio" name="{{loop.index}}" value=0> True </input>
+						<input type="radio" name="{{loop.index}}" value=1> False </input>
+					{% endif %}
+      		{% endfor %}
+      	{%else%}
+      		No questions available.
+      	{% endif %}
+		<button name="btn" value="submit"> Submit Survey </button>
+		</Form>
+   </body>
+</html>

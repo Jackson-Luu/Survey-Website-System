@@ -4,10 +4,13 @@
     <title>Admin page </title>
     </head>
     <style>
+		.body {
+			background-color: lightblue;
+		}
     	.content {
 			margin: auto;
 			text-align: center;
-			width: 70%;
+			width: 50%;
 			border: 3px solid green;
 			background: lightblue;
 		}
@@ -27,8 +30,21 @@
 		<div class="content">
 		<h1> Admin page </h1>
 		<Form method="POST">
-			<p>Select the survey you want to modify:</p>
-			{{ render_test|safe }}
+			<div class="q_block">
+				<h3> Create a Question </h3>
+				<input type="radio" name="q_type" value=0> Yes/No </input>
+				<input type="radio" name="q_type" value=1> Agree/Disagree </input> 
+				<input type="radio" name="q_type" value=2> Other </input><br></br>
+				<input name="question_box" placeholder="Enter Question"></input>
+				<button name="btn" value="create"> Create </button>
+			</div>
+			<div class="btn_block">
+				<h3> Manage Questions </h3>
+				<button name="btn" value="survey"> Create a Survey </button><br></br>
+				<button name="btn" value="pool"> View Questions </button><br></br>
+                <button name="btn" value="view_survey"> View Surveys </button>
+			</div>
+			<div class="clear_both"></div>
 	    </Form>
 		</div>
    	</body>
