@@ -37,10 +37,18 @@ def admin():
     """
 
     if request.method == "POST":
-        requested_survey = request.form["survey_selection"]
-        return redirect(url_for('admin_survey', survey_id=requested_survey))
+        if request.form["submit"] == "Select":
+            requested_survey = request.form["survey_selection"]
+            return redirect(url_for('admin_survey', survey_id=requested_survey))
+        elif request.form["submit"] == "Create Survey":
+            G_SURVEY_SYSTEM.add_survey("survey2")
 
-    to_be_rendered = G_SURVEY_SYSTEM.get_survey_list()
+    to_be_rendered = """
+        <div id='create_survey'>
+            <input type='submit' name='submit' value='Create Survey' />
+        </div>
+    """
+    to_be_rendered += G_SURVEY_SYSTEM.get_survey_list()
     return render_template("admin.html", render_test=to_be_rendered)
 
 @APP.route("/admin/<survey_id>", methods=["GET", "POST"])
@@ -59,6 +67,10 @@ def admin_survey(survey_id):
                 nvn2 = Question(nvn0)
                 nvn2.set_type(QuestionType.TEXT)
                 G_SURVEY_SYSTEM.mod_question(survey_id, x, nvn2)
+        elif request_value == "Create Question":
+            nvn2 = Question("")
+            nvn2.set_type(QuestionType.TEXT)
+            G_SURVEY_SYSTEM.add_question("", nvn2, survey_id)
 
     to_be_rendered = G_SURVEY_SYSTEM.get_survey_modifiable(survey_id)
     return render_template("admin.html", render_test=to_be_rendered)
@@ -76,6 +88,13 @@ def show_survey(survey_id):
                     foo = request.form["q_user_input_" + str(x)]
                     responsewriter = csv.writer(csvfile)
                     responsewriter.writerow([foo])
+            return redirect(url_for('survey_complete'))
 
     to_be_rendered = G_SURVEY_SYSTEM.get_survey_template(survey_id)
     return render_template("admin.html", render_test=to_be_rendered)
+
+@APP.route("/survey/complete")
+def survey_complete():
+    return """
+        <div>Thank you for participating</div>
+    """

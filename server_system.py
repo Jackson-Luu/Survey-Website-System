@@ -39,7 +39,7 @@ class SurveySystem:
 
         html_template += """
                 </select>
-                <input type='submit' name='chose_survey' value='Select'/>
+                <input type='submit' name='submit' value='Select'/>
             </div>
         """
 
@@ -53,8 +53,11 @@ class SurveySystem:
         self.surveys[s_uni_id] = s_obj
         self.surveys_map[name] = s_uni_id
 
-    def add_question(self, survey_name, obj_q):
-        survey_id = self.surveys_map[survey_name]
+    def add_question(self, survey_name, obj_q, survey_id=0):
+        if survey_id == 0:
+            survey_id = self.surveys_map[survey_name]
+        else:
+            survey_id = int(survey_id)
         self.surveys[survey_id].add_question(obj_q)
 
     def mod_question(self, survey_id, q_id, obj_q):

@@ -95,7 +95,8 @@ class Survey:
     def get_modify_template(self, survey_id):
         """ Get the survey that is able to be modified by the admin
         """
-        modify_template = "<input type='text' value='localhost:5000/survey/" + str(survey_id)  + "' /input>"
+        modify_template = "<input type='text' value='localhost:5000/survey/" + str(survey_id)  + "' /input><br/>"
+        modify_template += "<input type='submit' name='btn_sub' value='Create Question' /input>"
         q_counter = 0
 
         for question in self.list_of_q:
