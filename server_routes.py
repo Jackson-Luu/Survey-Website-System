@@ -58,13 +58,6 @@ def admin():
 	#to_be_rendered = G_SURVEY_SYSTEM.get_survey_list()
 	return render_template("admin.html")#, render_test=to_be_rendered)
 
-#@APP.route("/admin/<survey_id>")
-#def admin_survey(survey_id):
-#    """ Direct link to a survey
-#    """
-#    to_be_rendered = G_SURVEY_SYSTEM.get_survey_modifiable(survey_id)
-#    return render_template("admin.html", render_test=to_be_rendered)
-
 @APP.route("/admin/questions")
 def show_q():
     return render_template("questions.html", q_bank=system.get_questions())
