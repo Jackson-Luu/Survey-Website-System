@@ -2,6 +2,17 @@
 {% block content %}
 	<h1>University Survey Site</h1>
 	<h2>Admin Login</h2>
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<div class="flashes-wrapper">
+				<ul class=flashes>
+					{% for message in messages %}
+					<li>{{ message }}</li>
+					{% endfor %}
+				</ul>
+			</div>
+		{% endif %}
+	{% endwith %}
 	<form method="POST" class="login-form">
 		<div class="form-row">
 			{{ form.username.label }}:

@@ -1,2 +1,2 @@
-# assignment-1-starter
-Starter code for assignment 1
+# Major Assignment Code
+This should be the experimental version in which I muck around and make things
