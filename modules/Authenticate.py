@@ -1,11 +1,11 @@
-from modules.head import *
 import csv
+from modules.head import *
 
 class UserClass(UserMixin):
     def __init__(self, username, role):
         self.username = username
         self.role = role
-    
+
     def get_role(self):
         return self.role
 

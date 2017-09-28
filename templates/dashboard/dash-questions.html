@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="navigation">
+    <ul>
+        <li><a href="/staff/questions">Questions</a></li>
+        <li><a href="/staff/survey">Survey</a></li>
+        <li><a href="/staff/metrics">Metrics</a></li>
+    </ul>
+</div>
+<div id="dashboard-content">
+    <div id="dashboard-questions-controlpanel">
+        <a href="#">Create Question</a>
+        <div class="error_wrapper">
+            {% for message in form.question.errors %}
+                <div id="error_message">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% if form %}
+            <form  method="POST" class="question-form">
+                <div class="form-row">
+                    {{ form.question }}
+                </div>
+                <div class="form-row">
+                    {{ form.questiontype }}
+                </div>
+                <div class="form-row">
+                    <input id="submit" name="submit" type="Submit" value="Submit"/>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+    <div id="dashboard-questions">
+        <div>Question List</div>
+        {% if questions %}
+        <div>
+            {% for question in questions %}
+            <div>
+                <div>
+                    {{ question[0] }}
+                </div>
+                <div>
+                    <a href="#">Modify</a>
+                    <a href="/staff/questions/delete/{{ loop.index0 }}">Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

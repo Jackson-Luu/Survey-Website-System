@@ -3,17 +3,20 @@
   	<head>
 		<title>University Survey Site</title>
 		<link rel="stylesheet" type="text/css" href="~/COMP1531/templates/survey_home.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<style>
+			.content_block {
+				margin: auto;
+				text-align: center;
+				width: 50%;
+				border: 3px solid green;
+			}
+		</style>
 	</head>
-    <style>
-		.content_block {
-			margin: auto;
-			text-align: center;
-    		width: 50%;
-			border: 3px solid green;
-		}
-	</style>
-	<div class="content_block">
-        {% block content %}
-        {% endblock %}
-	</div>
+	<body>
+		<div class="content_block">
+			{% block content %}
+			{% endblock %}
+		</div>
+	</body>
 </html>
