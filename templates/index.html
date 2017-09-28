@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+	<h1>University Survey Site</h1>
+	<h2>Admin Login</h2>
+	<form method="POST" class="login-form">
+		<div class="form-row">
+			{{ form.username.label }}:
+			{{ form.username() }}
+		</div>
+		<div class="form-row">
+			{{ form.password.label }}:
+			{{ form.password() }}
+		</div>
+		<div class="form-row">
+			<input id="submit" name="submit" type="Submit" value="Submit"/>
+		</div>
+	</form>
+{% endblock %}
