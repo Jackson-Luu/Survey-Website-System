@@ -2,8 +2,8 @@
 {% block content %}
 {% include "dashboard/dash-nav.html" %}
 <div id="dashboard-content">
+    <h3>Add Question</h3>
     <div id="dashboard-questions-controlpanel">
-        <a href="#">Create Question</a>
         <div class="error_wrapper">
             {% for message in form.question.errors %}
                 <div id="error_message">{{ message }}</div>
@@ -11,34 +11,50 @@
         </div>
         {% if form %}
             <form  method="POST" class="question-form">
-                <div class="form-row">
-                    {{ form.question }}
+                <div class="form-group">
+                    <label>Question</label>
+                    {{ form.question(class="form-control") }}
                 </div>
-                <div class="form-row">
-                    {{ form.questiontype }}
+                <div class="form-group">
+                        <label>Question Type</label>
+                    {{ form.questiontype(class="form-control") }}
                 </div>
-                <div class="form-row">
-                    <input id="submit" name="submit" type="Submit" value="Submit"/>
+                <div class="form-group">
+                    <input class="btn-color btn-small" type="Submit" value="Submit"/>
                 </div>
             </form>
         {% endif %}
     </div>
     <div id="dashboard-questions">
-        <div>Question List</div>
+        <h3>Question Pool</h3>
         {% if questions %}
-        <div>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th>Qustion Type</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
             {% for question in questions %}
-            <div>
-                <div>
+            <tr>
+                <td>
                     {{ question[0] }}
-                </div>
-                <div>
-                    <a href="#">Modify</a>
-                    <a href="/staff/questions/delete/{{ loop.index0 }}">Delete</a>
-                </div>
-            </div>
+                </td>
+                <td>
+                    {{ question[1] }}
+                </td>
+                <td>
+                    <div id="table-options-section">
+                        <a href="#">Modify</a>
+                        <a href="/staff/questions/delete/{{ loop.index0 }}">Delete</a>
+                    </div>
+                </td>
+            </tr>
             {% endfor %}
-        </div>
+            </tbody>
+        </table>
         {% endif %}
     </div>
 </div>

@@ -1,11 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
-	<div id="index-title-wrapper">
+	<div id="index-wrapper">
 		<div id="index-title">
 			<h1><strong>University Survey Site</strong> <small>Login</small></h1>
 		</div>
-	</div>
-	<div id="index-title-content-wrapper">
 		<div id="index-title-content">
 			{% with messages = get_flashed_messages() %}
 				{% if messages %}
@@ -32,8 +30,8 @@
 				</div>
 			</form>
 		</div>
-	</div>
-	<div id="index-footer-wrapper">
-		Copyright LOLOLOL
+		<div id="index-footer-wrapper">
+			Copyright LOLOLOL
+		</div>
 	</div>
 {% endblock %}
