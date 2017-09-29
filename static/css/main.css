@@ -30,6 +30,14 @@ body{
     padding: 5px;
 }
 
+.btn-collapse{
+    display:block;
+    border:none;
+    background: none;
+    border-radius: 5px;
+    padding:0px;
+}
+
 .navigation{
     background-color: #fcc800;
     padding: 10px;
@@ -61,6 +69,15 @@ body{
     color: #ff0000;
 }
 
+.dashboard-subhead h3{
+    margin-right:10px;
+    display: inline-block;
+}
+
+.dashboard-subhead button{
+    display: inline-block;
+}
+
 #content_block{
     display:flex;
     flex-flow: column;
@@ -83,8 +100,10 @@ body{
 }
 
 #dashboard-content{
-    margin: auto;
-    width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20px;
+    width: 840px;
 }
 
 #table-options-section{

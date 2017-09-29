@@ -4,7 +4,7 @@ from flask import session
 from modules.head import *
 from modules.LoginForm import LoginForm
 from modules.Authenticate import Authenticate, RestoreUser
-from modules.QuestionsManager import DeleteQuestion, QuestionForm, ReadQuestions, AddQuestion
+from modules.QuestionsManager import ModifyForm, QuestionForm, DeleteQuestion, ReadQuestions, AddQuestion, ModifyQuestion
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
@@ -46,13 +46,18 @@ def staff_homepage():
 def staff_questions():
     if current_user.get_role() == 'staff':
         form = QuestionForm(request.form)
+        form_mod = ModifyForm(request.form)
         questions = ReadQuestions()
 
-        if request.method == 'POST' and form.validate():
+        if form.add.data and form.validate():
             AddQuestion(form.question.data, form.questiontype.data)
             return redirect(url_for('staff_questions'))
+        
+        if form_mod.mod.data and form_mod.validate():
+            ModifyQuestion(form_mod.questionid.data, form_mod.modquestion.data, form_mod.modquestiontype.data)
+            return redirect(url_for('staff_questions'))
 
-        return render_template('dashboard/dash-questions.html', questions=questions, form = form)
+        return render_template('dashboard/dash-questions.html', questions=questions, form = form, form_mod = form_mod)
     else:
         return 'gtfo'
 

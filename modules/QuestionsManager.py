@@ -6,6 +6,14 @@ class QuestionForm(Form):
     question = TextField('Question', [validators.Required('Please enter a question.')])
     questiontype = SelectField('Select_Field', choices = [('boolean', 'True Or False'), ('text', 'Text'),
                                         ('rating_int', 'Numeric Rating'), ('rating_text', 'Text Rating')])
+    add = SubmitField('Add')
+
+class ModifyForm(Form):
+    questionid = IntegerField('questionid')
+    modquestion = TextField('Question', [validators.Required('Please enter a question.')])
+    modquestiontype = SelectField('Select_Field', choices = [('boolean', 'True Or False'), ('text', 'Text'),
+                                        ('rating_int', 'Numeric Rating'), ('rating_text', 'Text Rating')])
+    mod = SubmitField('Modify')
 
 def ReadQuestions():
     if os.path.exists('storage/questions.csv'):
@@ -34,6 +42,26 @@ def DeleteQuestion(questionid):
             for row in questionreader:
                 if counter != questionid:
                     listofquestion.append(row)
+                counter += 1
+    
+    if len(listofquestion) != 0:
+        with open('storage/questions.csv', 'w') as csvfile:
+            for row in listofquestion:
+                questionwriter = csv.writer(csvfile)
+                questionwriter.writerow(row)
+
+def ModifyQuestion(questionid, question, questiontype):
+    counter = 0
+    listofquestion = []
+
+    if os.path.exists('storage/questions.csv'):
+        with open('storage/questions.csv') as csvfile:
+            questionreader = csv.reader(csvfile)
+            for row in questionreader:
+                if counter != questionid:
+                    listofquestion.append(row)
+                else:
+                    listofquestion.append([question, questiontype])
                 counter += 1
     
     if len(listofquestion) != 0:
