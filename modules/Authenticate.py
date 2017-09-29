@@ -17,6 +17,8 @@ def Authenticate(username, password):
     if role != 'INVALID':
         newuser = UserClass(username, role)
         login_user(newuser)
+        return True
+    return False
 
 def RestoreUser(username):
     with open('storage/passwords.csv') as csvfile:

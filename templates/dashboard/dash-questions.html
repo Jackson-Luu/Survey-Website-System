@@ -1,12 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
-<div class="navigation">
-    <ul>
-        <li><a href="/staff/questions">Questions</a></li>
-        <li><a href="/staff/survey">Survey</a></li>
-        <li><a href="/staff/metrics">Metrics</a></li>
-    </ul>
-</div>
+{% include "dashboard/dash-nav.html" %}
 <div id="dashboard-content">
     <div id="dashboard-questions-controlpanel">
         <a href="#">Create Question</a>

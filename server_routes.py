@@ -1,5 +1,6 @@
 # Survey flask server file
 from server import APP, LOGIN_MANAGER
+from flask import session
 from modules.head import *
 from modules.LoginForm import LoginForm
 from modules.Authenticate import Authenticate, RestoreUser
@@ -16,11 +17,11 @@ def survey_homepage():
     form = LoginForm(request.form)
 
     if request.method == 'POST' and form.validate():
-        Authenticate(form.username.data, form.password.data)
-        if current_user.get_role() == 'student':
-            return redirect(url_for('student_homepage'))
-        elif current_user.get_role() == 'staff':
-            return redirect(url_for('staff_homepage'))
+        if Authenticate(form.username.data, form.password.data):
+            if current_user.get_role() == 'student':
+                return redirect(url_for('student_homepage'))
+            elif current_user.get_role() == 'staff':
+                return redirect(url_for('staff_homepage'))
 
     return render_template('index.html', form=form)
 
@@ -58,8 +59,6 @@ def staff_questions():
 @APP.route('/staff/questions/delete/<int:questionid>')
 @login_required
 def delete_question(questionid):
-    loopid = 0
-
     questionid = int(questionid)
     DeleteQuestion(questionid)
 
@@ -68,5 +67,6 @@ def delete_question(questionid):
 @APP.route('/logout')
 @login_required
 def logout():
+    session.pop('_flashes', None)
     logout_user()
     return redirect(url_for('survey_homepage'))

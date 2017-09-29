@@ -1,29 +1,39 @@
 {% extends "layout.html" %}
 {% block content %}
-	<h1>University Survey Site</h1>
-	<h2>Admin Login</h2>
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
-			<div class="flashes-wrapper">
-				<ul class=flashes>
-					{% for message in messages %}
-					<li>{{ message }}</li>
-					{% endfor %}
-				</ul>
-			</div>
-		{% endif %}
-	{% endwith %}
-	<form method="POST" class="login-form">
-		<div class="form-row">
-			{{ form.username.label }}:
-			{{ form.username() }}
+	<div id="index-title-wrapper">
+		<div id="index-title">
+			<h1><strong>University Survey Site</strong> <small>Login</small></h1>
 		</div>
-		<div class="form-row">
-			{{ form.password.label }}:
-			{{ form.password() }}
+	</div>
+	<div id="index-title-content-wrapper">
+		<div id="index-title-content">
+			{% with messages = get_flashed_messages() %}
+				{% if messages %}
+					<div class="flashes-wrapper">
+						<ul class="alert alert-info">
+							{% for message in messages %}
+							<li><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> {{ message }}</li>
+							{% endfor %}
+						</ul>
+					</div>
+				{% endif %}
+			{% endwith %}
+			<form method="POST" class="login-form">
+				<div class="form-group">
+					{{ form.username.label }}:
+					{{ form.username(class="form-control") }}
+				</div>
+				<div class="form-group">
+					{{ form.password.label }}:
+					{{ form.password(class="form-control") }}
+				</div>
+				<div class="form-group">
+					<input class="btn-color" type="Submit" value="SUBMIT"/>
+				</div>
+			</form>
 		</div>
-		<div class="form-row">
-			<input id="submit" name="submit" type="Submit" value="Submit"/>
-		</div>
-	</form>
+	</div>
+	<div id="index-footer-wrapper">
+		Copyright LOLOLOL
+	</div>
 {% endblock %}
