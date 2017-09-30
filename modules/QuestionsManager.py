@@ -1,6 +1,46 @@
-import csv
-import os
 from modules.head import *
+from modules.Question import Question
+
+def read_questions(question_list):
+    """ We are going to go through the list of questions and translate it
+        into something that can rendered into the templates
+    """
+    renderable = []
+    for q in question_list:
+        type_text = ""
+        type_enum = q.get_type()
+
+        if type_enum == QuestionType.TEXT:
+            type_text = "Text Response"
+        elif type_enum == QuestionType.BOOL:
+            type_text = "True or False"
+        elif type_enum == QuestionType.RATI:
+            type_text = "Numeric Rating"
+        elif type_enum == QuestionType.RATS:
+            type_text = "Text Rating"
+
+        renderable.append([q.get_id(), q.get_text(), type_text])
+
+    return renderable
+
+def create_question(question_id, question_text, question_type):
+    """ We are going to get the raw data and convert it into a question
+        object which we will return
+    """
+    type_enum = QuestionType(0) # Default it to the first type
+
+    if question_type == "boolean":
+        type_enum = QuestionType(1)
+    elif question_type == "rating_int":
+        type_enum = QuestionType(2)
+    elif question_type == "rating_text":
+        type_enum = QuestionType(3)
+
+    question_obj = Question(question_id)
+    question_obj.set_text(question_text)
+    question_obj.set_type(type_enum)
+
+    return question_obj
 
 class QuestionForm(Form):
     question = TextField('Question', [validators.Required('Please enter a question.')])
@@ -14,58 +54,3 @@ class ModifyForm(Form):
     modquestiontype = SelectField('Select_Field', choices = [('boolean', 'True Or False'), ('text', 'Text'),
                                         ('rating_int', 'Numeric Rating'), ('rating_text', 'Text Rating')])
     mod = SubmitField('Modify')
-
-def ReadQuestions():
-    if os.path.exists('storage/questions.csv'):
-        with open('storage/questions.csv') as csvfile:
-            listofquestion = []
-            questionreader = csv.reader(csvfile)
-            for row in questionreader:
-                listofquestion.append(row)
-        return listofquestion
-    else:
-        open('storage/questions.csv', 'w').close()
-        return []
-
-def AddQuestion(question, questiontype):
-    with open('storage/questions.csv', 'a') as csvfile:
-        questionwriter = csv.writer(csvfile)
-        questionwriter.writerow([question, questiontype])
-
-def DeleteQuestion(questionid):
-    counter = 0
-    listofquestion = []
-
-    if os.path.exists('storage/questions.csv'):
-        with open('storage/questions.csv') as csvfile:
-            questionreader = csv.reader(csvfile)
-            for row in questionreader:
-                if counter != questionid:
-                    listofquestion.append(row)
-                counter += 1
-    
-    if len(listofquestion) != 0:
-        with open('storage/questions.csv', 'w') as csvfile:
-            for row in listofquestion:
-                questionwriter = csv.writer(csvfile)
-                questionwriter.writerow(row)
-
-def ModifyQuestion(questionid, question, questiontype):
-    counter = 0
-    listofquestion = []
-
-    if os.path.exists('storage/questions.csv'):
-        with open('storage/questions.csv') as csvfile:
-            questionreader = csv.reader(csvfile)
-            for row in questionreader:
-                if counter != questionid:
-                    listofquestion.append(row)
-                else:
-                    listofquestion.append([question, questiontype])
-                counter += 1
-    
-    if len(listofquestion) != 0:
-        with open('storage/questions.csv', 'w') as csvfile:
-            for row in listofquestion:
-                questionwriter = csv.writer(csvfile)
-                questionwriter.writerow(row)

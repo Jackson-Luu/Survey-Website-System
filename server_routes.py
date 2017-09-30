@@ -4,7 +4,10 @@ from flask import session
 from modules.head import *
 from modules.LoginForm import LoginForm
 from modules.Authenticate import Authenticate, RestoreUser
-from modules.QuestionsManager import ModifyForm, QuestionForm, DeleteQuestion, ReadQuestions, AddQuestion, ModifyQuestion
+from modules.DatabaseManager import DBManager
+from modules.QuestionsManager import ModifyForm, QuestionForm, read_questions, create_question
+
+DBMANAGER = DBManager('questions')
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
@@ -44,28 +47,32 @@ def staff_homepage():
 @APP.route('/staff/questions', methods=['GET', 'POST'])
 @login_required
 def staff_questions():
+    """ This function will run when the user goes to the url above """
     if current_user.get_role() == 'staff':
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
-        questions = ReadQuestions()
+        questions = read_questions(DBMANAGER.retrieve_data())
 
         if form.add.data and form.validate():
-            AddQuestion(form.question.data, form.questiontype.data)
-            return redirect(url_for('staff_questions'))
-        
-        if form_mod.mod.data and form_mod.validate():
-            ModifyQuestion(form_mod.questionid.data, form_mod.modquestion.data, form_mod.modquestiontype.data)
+            qobj = create_question(len(DBMANAGER.retrieve_data()),
+                                   form.question.data, form.questiontype.data)
             return redirect(url_for('staff_questions'))
 
-        return render_template('dashboard/dash-questions.html', questions=questions, form = form, form_mod = form_mod)
+        if form_mod.mod.data and form_mod.validate():
+            qobj = create_question(form_mod.question_id.data,
+                                   form_mod.modquestion.data, form_mod.modquestiontype.data)
+            DBMANAGER.modify_data(qobj)
+            return redirect(url_for('staff_questions'))
+
+        return render_template('dashboard/dash-questions.html',
+                               questions=questions, form=form, form_mod=form_mod)
     else:
         return 'gtfo'
 
-@APP.route('/staff/questions/delete/<int:questionid>')
+@APP.route('/staff/questions/delete/<questionid>')
 @login_required
 def delete_question(questionid):
-    questionid = int(questionid)
-    DeleteQuestion(questionid)
+    DBMANAGER.remove_data(questionid)
 
     return redirect(url_for('staff_questions'))
 
