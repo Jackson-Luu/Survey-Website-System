@@ -51,18 +51,20 @@ class DBManager():
         """ Delete the data from the database """
         listofquestion = []
 
-        if os.path.exists('storage/questions.csv'):
-            with open('storage/questions.csv') as csvfile:
+        if os.path.exists(self._final_path):
+            with open(self._final_path) as csvfile:
                 questionreader = csv.reader(csvfile)
                 for row in questionreader:
                     if row[0] != questionid:
                         listofquestion.append(row)
-        
-        if len(listofquestion) != 0:
-            with open('storage/questions.csv', 'w') as csvfile:
+
+        if len(listofquestion) > 0:
+            with open(self._final_path, 'w') as csvfile:
                 for row in listofquestion:
                     questionwriter = csv.writer(csvfile)
                     questionwriter.writerow(row)
+        else:
+            open(self._final_path, 'w').close()
 
     def modify_data(self, question):
         """ Modify the question in the database """

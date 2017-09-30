@@ -56,6 +56,7 @@ def staff_questions():
         if form.add.data and form.validate():
             qobj = create_question(len(DBMANAGER.retrieve_data()),
                                    form.question.data, form.questiontype.data)
+            DBMANAGER.add_data(qobj)
             return redirect(url_for('staff_questions'))
 
         if form_mod.mod.data and form_mod.validate():
