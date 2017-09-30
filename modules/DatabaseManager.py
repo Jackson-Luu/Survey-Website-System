@@ -91,7 +91,9 @@ class DBManager():
             raise Exception("question given is not of type Question")
 
     def retrieve_specific(self, question_id_list):
-        """ Retrieve a specific list of data based on the id """
+        """ Retrieve a specific list of Questions based on the question id
+            listed
+        """
 
         if os.path.exists(self._final_path):
             # If the file exists, open it and read the row of data
