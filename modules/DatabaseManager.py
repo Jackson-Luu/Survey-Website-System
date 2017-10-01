@@ -5,6 +5,7 @@
 """
 import csv
 import os
+import sqlite3
 from modules.Question import Question
 from modules.head import *
 
@@ -13,40 +14,65 @@ class DBManager():
     def __init__(self, file_name):
         self._file_name = file_name
         # Change the file extension if you want to change how the data is stored
-        self._file_ext = '.csv'
+        self._file_ext = '.db'
         self._final_path = 'storage/' + self._file_name + self._file_ext
+
+    # function to execute database queries
+    def db_query(self, query, args):
+        connection = sqlite3.connect(self._final_path)
+        cursorObj = connection.cursor()
+        if not args:
+            result = cursorObj.execute(query) 
+        else:
+            result = cursorObj.execute(query, args)      
+        connection.commit()
+
+        if result:
+            rows = []
+            for row in result:
+                rows.append(row)
+            cursorObj.close()
+            return rows
+        cursorObj.close()
 
     def retrieve_data(self):
         """ Here, we are going to access the data and return it as a list """
 
         if os.path.exists(self._final_path):
             # If the file exists, open it and read the row of data
-            with open(self._final_path) as csvfile:
-                listofquestion = []
-                questionreader = csv.reader(csvfile)
+            user = "STAFF_01"	# temporary placeholder for current user
 
-                for row in questionreader:
-                    new_q = Question(row[0])
+            # read all from table
+            listofquestion = []
+            query = "SELECT * FROM {};".format(user)
+            for row in self.db_query(query, False):
+                new_q = Question(row[0])
 
-                    new_q.set_text(row[1])
-                    new_q.set_type(QuestionType(int(row[2])))
+                new_q.set_text(row[1])
+                new_q.set_type(QuestionType(int(row[2])))
 
-                    listofquestion.append(new_q)
-
+                listofquestion.append(new_q)
             return listofquestion
         else:
-            open(self._final_path, 'w').close()
             return []
 
     def add_data(self, question):
         """ Here, we are going to add a question to the database """
+        user = 'STAFF_01'	# temporary placeholder for current user
+
+        # if a valid question has been provided
         if isinstance(question, Question):
-            with open(self._final_path, 'a') as csvfile:
-                questionwriter = csv.writer(csvfile)
-                questionwriter.writerow([question.get_id(), question.get_text(),
-                                         question.get_type().value])
+            # create new table for current user if it doesn't already exist
+            query = 'CREATE TABLE IF NOT EXISTS {} (Q_ID INT PRIMARY KEY NOT NULL, TITLE TEXT NOT NULL, TYPE INT NOT NULL);'.format(user)
+            self.db_query(query, False)
+
+            # add question
+            query = "INSERT INTO {} (Q_ID,TITLE,TYPE) VALUES (?, ?, ?);".format(user)
+            self.db_query(query, (question.get_id(), question.get_text(), question.get_type().value))
         else:
             raise Exception("question given is not of type Question")
+            
+"""Everything above has been converted from csv to database"""
 
     def remove_data(self, questionid):
         """ Delete the data from the database """
