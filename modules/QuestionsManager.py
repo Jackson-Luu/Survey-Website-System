@@ -1,14 +1,15 @@
 from modules.head import *
-from modules.Question import Question
+from modules.DataPacket import DataPacket
 
-def read_questions(question_list):
+def read_questions(data_packet):
     """ We are going to go through the list of questions and translate it
         into something that can rendered into the templates
     """
     renderable = []
-    for q in question_list:
+    data_list = data_packet.retrieve_data()
+    for data in data_list:
         type_text = ""
-        type_enum = q.get_type()
+        type_enum = QuestionType(int(data[2]))
 
         if type_enum == QuestionType.TEXT:
             type_text = "Text Response"
@@ -19,28 +20,26 @@ def read_questions(question_list):
         elif type_enum == QuestionType.RATS:
             type_text = "Text Rating"
 
-        renderable.append([q.get_id(), q.get_text(), type_text])
+        renderable.append([data[0], data[1], type_text])
 
     return renderable
 
-def create_question(question_id, question_text, question_type):
+def create_question(data_packet, question_id, question_text, question_type):
     """ We are going to get the raw data and convert it into a question
         object which we will return
     """
-    type_enum = QuestionType(0) # Default it to the first type
+    type_enum = 0 # Default it to the first type
 
     if question_type == "boolean":
-        type_enum = QuestionType(1)
+        type_enum = 1
     elif question_type == "rating_int":
-        type_enum = QuestionType(2)
+        type_enum = 2
     elif question_type == "rating_text":
-        type_enum = QuestionType(3)
+        type_enum = 3
 
-    question_obj = Question(question_id)
-    question_obj.set_text(question_text)
-    question_obj.set_type(type_enum)
+    data_packet.add_data([question_id, question_text, type_enum])
 
-    return question_obj
+    return data_packet
 
 class QuestionForm(Form):
     question = TextField('Question', [validators.Required('Please enter a question.')])

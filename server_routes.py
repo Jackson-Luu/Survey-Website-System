@@ -6,8 +6,9 @@ from modules.LoginForm import LoginForm
 from modules.Authenticate import Authenticate, RestoreUser
 from modules.DatabaseManager import DBManager
 from modules.QuestionsManager import ModifyForm, QuestionForm, read_questions, create_question
+from modules.DataPacket import DataPacket
 
-DBMANAGER = DBManager('questions')
+DBMANAGER_QU = DBManager('questions')
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
@@ -51,29 +52,36 @@ def staff_questions():
     if current_user.get_role() == 'staff':
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
-        questions = read_questions(DBMANAGER.retrieve_data())
+
+        add_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
+        read_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
+        read_packet = DBMANAGER_QU.retrieve_data(read_packet)
 
         if form.add.data and form.validate():
-            qobj = create_question(len(DBMANAGER.retrieve_data()),
-                                   form.question.data, form.questiontype.data)
-            DBMANAGER.add_data(qobj)
+            add_packet = create_question(add_packet, len(read_packet.retrieve_data()),
+                                         form.question.data, form.questiontype.data)
+            DBMANAGER_QU.add_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         if form_mod.mod.data and form_mod.validate():
-            qobj = create_question(form_mod.question_id.data,
-                                   form_mod.modquestion.data, form_mod.modquestiontype.data)
-            DBMANAGER.modify_data(qobj)
             return redirect(url_for('staff_questions'))
+
+        questions = read_questions(read_packet)
 
         return render_template('dashboard/dash-questions.html',
                                questions=questions, form=form, form_mod=form_mod)
     else:
         return 'gtfo'
 
-@APP.route('/staff/questions/delete/<questionid>')
+@APP.route('/staff/questions/ajax-delete-questions', methods=['GET', 'POST'])
 @login_required
-def delete_question(questionid):
-    DBMANAGER.remove_data(questionid)
+def delete_question():
+    delete_packet = DataPacket('1219', ['ID'])
+
+    for questionids in request.json['questionids']:
+        delete_packet.add_data(questionids)
+
+    DBMANAGER_QU.remove_data(delete_packet)
 
     return redirect(url_for('staff_questions'))
 
@@ -83,3 +91,8 @@ def logout():
     session.pop('_flashes', None)
     logout_user()
     return redirect(url_for('survey_homepage'))
+
+@APP.route('/staff/survey', methods=['GET', 'POST'])
+@login_required
+def staff_survey():
+    render_template('dashboard/dash-surveys.html')

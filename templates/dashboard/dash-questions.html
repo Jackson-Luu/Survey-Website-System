@@ -78,7 +78,8 @@
             {% for question in questions %}
             <tr>
                 <td>
-                    {{ question[0] }}
+                    <div class="table-id">{{ question[0] }}</div>
+                    <input type="checkbox" class="checkbox-del" id="{{ question[0] }}" hidden/>
                 </td>
                 <td>
                     {{ question[1] }}
@@ -88,14 +89,19 @@
                 </td>
                 <td>
                     <div id="table-options-section">
-                        <a href="#" onclick="modifyquestion({{ loop.index0 }})">Modify</a>
-                        <a href="/staff/questions/delete/{{ loop.index0 }}">Delete</a>
+                        <a href="#">Modify</a>
+                        <a href="#" onclick="show_delete()">Delete</a>
                     </div>
                 </td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
+        <div id="delete_options" class="collapse">
+            <label>Select the questions you want to delete.</label><br/>
+            <button class="btn-color btn-small" type="button" onclick="delete_questions()">Delete</button>
+            <button class="btn-color btn-small" type="button" onclick="show_delete()">Cancel</button>
+        </div>
         {% endif %}
     </div>
 </div>
@@ -129,6 +135,50 @@
             }
         })
     }
+
+    var deleting = false;
+    function delete_questions(){
+        if(deleting) return;
+        deleting = true;
+
+        selected = []
+        $(".checkbox-del").each(function(){
+            var checkbox = $(this)
+            if(checkbox.is(":checked")) selected.push(checkbox.attr("id"));
+        })
+
+        data = {
+            questionids: selected
+        };
+
+        $.ajax({
+            url: "/staff/questions/ajax-delete-questions",
+            method: "POST",
+            data:JSON.stringify(data, null, '\t'),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(result) {
+                location.reload();
+            }
+        });
+    }
+
+    function show_delete(){
+        if(!$("#delete_options").hasClass("collapse in")){
+            $("#delete_options").collapse("show");
+        } else {
+            $("#delete_options").collapse("hide");
+        }
+    }
+
+    $("#delete_options").on('show.bs.collapse', function(){
+        $(".checkbox-del").show();
+        $(".table-id").hide();
+    })
+
+    $("#delete_options").on('hide.bs.collapse', function(){
+        $(".checkbox-del").hide();
+        $(".table-id").show();
+    })
 
     $("#btn-add-q").click(function(){
         $(this).find("span").toggleClass("glyphicon-chevron-down").toggleClass("glyphicon-chevron-up");
