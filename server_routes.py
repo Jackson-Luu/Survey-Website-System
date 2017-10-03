@@ -9,6 +9,7 @@ from modules.QuestionsManager import ModifyForm, QuestionForm, read_questions, c
 from modules.DataPacket import DataPacket
 
 DBMANAGER_QU = DBManager('questions')
+DBMANAGER_SU = DBManager('surveys')
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
@@ -53,17 +54,24 @@ def staff_questions():
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
 
-        add_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
+        # Load up packet to read the information.
+        # This should be after the form data but because we are being lazy with the
+        # data id, we need to load it first.
         read_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
         read_packet = DBMANAGER_QU.retrieve_data(read_packet)
 
         if form.add.data and form.validate():
+            # If the form is needed to add data, use it to add data
+            # Load up the packet and set it to store the data
+            add_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
             add_packet = create_question(add_packet, len(read_packet.retrieve_data()),
                                          form.question.data, form.questiontype.data)
             DBMANAGER_QU.add_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         if form_mod.mod.data and form_mod.validate():
+            # Here, we should modify the questions but this is extremely low
+            # priority, do it later I guess.
             return redirect(url_for('staff_questions'))
 
         questions = read_questions(read_packet)
@@ -76,8 +84,10 @@ def staff_questions():
 @APP.route('/staff/questions/ajax-delete-questions', methods=['GET', 'POST'])
 @login_required
 def delete_question():
+    """ Delete the questions """
     delete_packet = DataPacket('1219', ['ID'])
 
+    # From the javascript an Ajax call will be made
     for questionids in request.json['questionids']:
         delete_packet.add_data(questionids)
 
@@ -95,4 +105,4 @@ def logout():
 @APP.route('/staff/survey', methods=['GET', 'POST'])
 @login_required
 def staff_survey():
-    render_template('dashboard/dash-surveys.html')
+    return render_template('dashboard/dash-surveys.html')

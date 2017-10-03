@@ -3,7 +3,6 @@
     to a single class. In doing this, we are able to change how we access the database without
     causing much issue.
 """
-import csv
 import os
 import sqlite3
 from modules.DataPacket import DataPacket
@@ -29,20 +28,19 @@ class DBManager():
             result = cursorObj.execute(query, args)
         connection.commit()
 
+        rows = []
         if result:
-            rows = []
             for row in result:
                 rows.append(row)
-            cursorObj.close()
-            return rows
         cursorObj.close()
+        return rows
 
     def prepare_create_query_str(self, data_packet):
         """ Prepare a query string to add a new table if needed """
         user = data_packet.retrieve_user_id()
         query = 'CREATE TABLE IF NOT EXISTS "{}" ('
-        first_run = True
 
+        first_run = True
         for query_id in data_packet.retrieve_query_id():
             if first_run:
                 query = query + '{} TEXT PRIMARY KEY NOT NULL'.format(query_id)
@@ -115,7 +113,7 @@ class DBManager():
             # create new table for current user if it doesn't already exist
             query = self.prepare_create_query_str(data_packet)
             self.db_query(query, False)
-            
+
             # add question
             query = self.prepare_query_str(data_packet)
             for data in data_packet.retrieve_data():

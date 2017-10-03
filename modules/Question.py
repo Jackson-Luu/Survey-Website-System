@@ -1,4 +1,6 @@
 """
+    OUTDATE!
+    SHOULD NOT BE USED!
     Here, we are going to create a Question class that will be able to access important
     data without having the rest of the system work with raw data. Thus, we can make changes
     the way we store the raw data without comprising the whole system.

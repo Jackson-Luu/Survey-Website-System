@@ -2,13 +2,16 @@ from modules.head import *
 from modules.DataPacket import DataPacket
 
 def read_questions(data_packet):
-    """ We are going to go through the list of questions and translate it
+    """ We are going to go through the list of DataPackets and translate it
         into something that can rendered into the templates
     """
-    renderable = []
+    renderable = [] # List to hold the information that can used by Jinja2
     data_list = data_packet.retrieve_data()
+
     for data in data_list:
-        type_text = ""
+        # Go through each data and translate it into just 3 strings that can
+        # be stored in a list
+        type_text = "" # The string that will show what the information is
         type_enum = QuestionType(int(data[2]))
 
         if type_enum == QuestionType.TEXT:
@@ -25,7 +28,7 @@ def read_questions(data_packet):
     return renderable
 
 def create_question(data_packet, question_id, question_text, question_type):
-    """ We are going to get the raw data and convert it into a question
+    """ We are going to get the raw data and convert it into a DataPacket
         object which we will return
     """
     type_enum = 0 # Default it to the first type
@@ -43,13 +46,27 @@ def create_question(data_packet, question_id, question_text, question_type):
 
 class QuestionForm(Form):
     question = TextField('Question', [validators.Required('Please enter a question.')])
-    questiontype = SelectField('Select_Field', choices = [('boolean', 'True Or False'), ('text', 'Text'),
-                                        ('rating_int', 'Numeric Rating'), ('rating_text', 'Text Rating')])
+    questiontype = SelectField(
+        'Select_Field',
+        choices=[
+            ('boolean', 'True Or False'),
+            ('text', 'Text'),
+            ('rating_int', 'Numeric Rating'),
+            ('rating_text', 'Text Rating')
+        ]
+    )
     add = SubmitField('Add')
 
 class ModifyForm(Form):
     questionid = IntegerField('questionid')
     modquestion = TextField('Question', [validators.Required('Please enter a question.')])
-    modquestiontype = SelectField('Select_Field', choices = [('boolean', 'True Or False'), ('text', 'Text'),
-                                        ('rating_int', 'Numeric Rating'), ('rating_text', 'Text Rating')])
+    modquestiontype = SelectField(
+        'Select_Field',
+        choices=[
+            ('boolean', 'True Or False'),
+            ('text', 'Text'),
+            ('rating_int', 'Numeric Rating'),
+            ('rating_text', 'Text Rating')\
+        ]
+    )
     mod = SubmitField('Modify')
