@@ -178,3 +178,9 @@ class DBManager():
             
         else:
             raise Exception("question given is not of type Question")
+	
+    def last_id(self, data_packet):
+        if isinstance(data_packet, DataPacket):
+            user = data_packet.retrieve_user_id()
+            query = 'SELECT MAX(ID) FROM "{}"'.format(user)
+            return(int(self.db_query(query, False)[0][0]) + 1)
