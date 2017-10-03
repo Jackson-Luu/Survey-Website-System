@@ -58,12 +58,15 @@ def staff_questions():
         read_packet = DBMANAGER_QU.retrieve_data(read_packet)
 
         if form.add.data and form.validate():
-            add_packet = create_question(add_packet, len(read_packet.retrieve_data()),
+            add_packet = create_question(add_packet, DBMANAGER_QU.last_id(read_packet),
                                          form.question.data, form.questiontype.data)
             DBMANAGER_QU.add_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         if form_mod.mod.data and form_mod.validate():
+            add_packet = create_question(add_packet, form_mod.questionid.data,
+                                         form_mod.modquestion.data, form_mod.modquestiontype.data)
+            DBMANAGER_QU.modify_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         questions = read_questions(read_packet)
