@@ -54,9 +54,6 @@ def staff_questions():
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
 
-        # Load up packet to read the information.
-        # This should be after the form data but because we are being lazy with the
-        # data id, we need to load it first.
         read_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
         read_packet = DBMANAGER_QU.retrieve_data(read_packet)
 
@@ -64,14 +61,15 @@ def staff_questions():
             # If the form is needed to add data, use it to add data
             # Load up the packet and set it to store the data
             add_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
-            add_packet = create_question(add_packet, len(read_packet.retrieve_data()),
+            add_packet = create_question(add_packet, DBMANAGER_QU.last_id(read_packet),
                                          form.question.data, form.questiontype.data)
             DBMANAGER_QU.add_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         if form_mod.mod.data and form_mod.validate():
-            # Here, we should modify the questions but this is extremely low
-            # priority, do it later I guess.
+            add_packet = create_question(add_packet, form_mod.questionid.data,
+                                         form_mod.modquestion.data, form_mod.modquestiontype.data)
+            DBMANAGER_QU.modify_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         questions = read_questions(read_packet)

@@ -139,54 +139,46 @@ class DBManager():
 
             query = query + ')'
             query = query.format(user)
+            print(query)
             self.db_query(query, None)
 
-"""
-    def modify_data(self, question):
-            Modify the question in the database
-        if isinstance(question, Question):
+    def modify_data(self, data_packet):
+        """Modify the question in the database"""
+        if isinstance(data_packet, DataPacket):
             listofquestion = []
 
-            if os.path.exists(self._final_path):
-                with open(self._final_path) as csvfile:
-                    questionreader = csv.reader(csvfile)
-                    for row in questionreader:
-                        if row[0] != question.get_id():
-                            listofquestion.append(row)
-                        else:
-                            listofquestion.append([question.get_id(), question.get_text(),
-                                                   question.get_type().value])
+            query_ids = data_packet.retrieve_query_id()
+            user = data_packet.retrieve_user_id()
+            query = 'UPDATE "{}" SET '
+            first_run = True
 
-            if len(listofquestion) != 0:
-                with open(self._final_path, 'w') as csvfile:
-                    for row in listofquestion:
-                        questionwriter = csv.writer(csvfile)
-                        questionwriter.writerow(row)
+            for query_id in data_packet.retrieve_query_id():
+                if first_run:
+                    query = query + query_id + ' = ?'
+                    first_run = False
+                else:
+                    query = query + ', ' + query_id + ' = ?'
+ 
+            query = query + ' WHERE '
+
+            first_run = True
+            
+            for d in data_packet.retrieve_data():
+                for x in range(0, len(query_ids)):
+                    if first_run:
+                        query = query + query_ids[x] + ' = ' + d[x]		
+                        first_run = False
+
+            query = query.format(user)
+            print(query)
+            for data in data_packet.retrieve_data():
+                self.db_query(query, data)           
+            
         else:
             raise Exception("question given is not of type Question")
-
-    def retrieve_specific(self, question_id_list):
-         Retrieve a specific list of Questions based on the question id
-            listed
-        
-
-        if os.path.exists(self._final_path):
-            # If the file exists, open it and read the row of data
-            with open(self._final_path) as csvfile:
-                listofquestion = []
-                questionreader = csv.reader(csvfile)
-
-                for row in questionreader:
-                    if row[0] in question_id_list:
-                        new_q = Question(row[0])
-
-                        new_q.set_text(row[1])
-                        new_q.set_type(QuestionType(int(row[2])))
-
-                        listofquestion.append(new_q)
-
-            return listofquestion
-        else:
-            open(self._final_path, 'w').close()
-            return []
-"""
+	
+    def last_id(self, data_packet):
+        if isinstance(data_packet, DataPacket):
+            user = data_packet.retrieve_user_id()
+            query = 'SELECT MAX(ID) FROM "{}"'.format(user)
+            return(int(self.db_query(query, False)[0][0]) + 1)
