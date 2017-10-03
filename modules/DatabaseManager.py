@@ -118,8 +118,7 @@ class DBManager():
             
             # add question
             query = self.prepare_query_str(data_packet)
-            for data in data_packet.retrieve_data():
-                self.db_query(query, data)
+            self.db_query(query, data_packet.retrieve_data())
         else:
             raise Exception("question given is not of type Question")
 
@@ -127,21 +126,21 @@ class DBManager():
         """ Delete the data from the database """
         query_ids = delete_packet.retrieve_query_id()
         user = delete_packet.retrieve_user_id()
+            
+        d = delete_packet.retrieve_data():
+        first_run = True
+        query = 'DELETE FROM "{}" WHERE ('
 
-        for d in delete_packet.retrieve_data():
-            first_run = True
-            query = 'DELETE FROM "{}" WHERE ('
+        for x in range(0, len(query_ids)):
+            if first_run:
+                query = query + query_ids[x] + ' = ' + d[x]
+                first_run = False
+            else:
+                query = query + ' AND ' + query_ids[x] + ' = ' + d[x]
 
-            for x in range(0, len(query_ids)):
-                if first_run:
-                    query = query + query_ids[x] + ' = ' + d[x]
-                    first_run = False
-                else:
-                    query = query + ' AND ' + query_ids[x] + ' = ' + d[x]
-
-            query = query + ')'
-            query = query.format(user)
-            self.db_query(query, None)
+        query = query + ')'
+        query = query.format(user)
+        self.db_query(query, None)
 
 """
     def modify_data(self, question):
