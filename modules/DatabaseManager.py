@@ -38,24 +38,42 @@ class DBManager():
     def prepare_create_query_str(self, data_packet):
         """ Prepare a query string to add a new table if needed """
         user = data_packet.retrieve_user_id()
+        table_suffix = data_packet.retrieve_suffix()
         query = 'CREATE TABLE IF NOT EXISTS "{}" ('
 
         first_run = True
         for query_id in data_packet.retrieve_query_id():
-            if first_run:
-                query = query + '{} TEXT PRIMARY KEY NOT NULL'.format(query_id)
-                first_run = False
+            if isinstance(query_id, dict):
+                key_foreign = ';foreign;'
+                key_suffix = ';suffix;'
+                if key_foreign in query_id and key_suffix in query_id:
+                    mapped_data = query_id[key_foreign]
+                    suffix = query_id[key_suffix]
+                    if first_run:
+                        query = query + mapped_data + ' TEXT references "'\
+                                      + data_packet.retrieve_user_id()\
+                                      + suffix + '(' + mapped_data + ')"'
+                        first_run = False
+                    else:
+                        query = query + ', ' + mapped_data + ' TEXT references "'\
+                                      + data_packet.retrieve_user_id()\
+                                      + suffix + '(' + mapped_data + ')"'
             else:
-                query = query + ',{} TEXT NOT NULL'.format(query_id)
+                if first_run:
+                    query = query + '{} TEXT PRIMARY KEY NOT NULL'.format(query_id)
+                    first_run = False
+                else:
+                    query = query + ',{} TEXT NOT NULL'.format(query_id)
 
         query = query + ');'
-        query = query.format(user)
+        query = query.format(user + table_suffix)
         return query
 
     def prepare_query_str(self, data_packet):
         """ Prepare a query string to add data to the table """
 
         user = data_packet.retrieve_user_id()
+        table_suffix = data_packet.retrieve_suffix()
         query = 'INSERT INTO "{}" ('
         first_run = True
 
@@ -79,7 +97,7 @@ class DBManager():
                 query = query + ',?'
 
         query = query + ');'
-        query = query.format(user)
+        query = query.format(user + table_suffix)
 
         return query
 
@@ -91,13 +109,14 @@ class DBManager():
         if os.path.exists(self._final_path):
             # If the file exists, open it and read the row of data
             user = data_packet.retrieve_user_id()
+            table_suffix = data_packet.retrieve_suffix()
 
             # create new table for current user if it doesn't already exist
             query = self.prepare_create_query_str(data_packet)
             self.db_query(query, False)
 
             # read all from table
-            query = 'SELECT * FROM "{}";'.format(user)
+            query = 'SELECT * FROM "{}";'.format(user + table_suffix)
             for row in self.db_query(query, False):
                 data_packet.add_data(row)
         else:
@@ -180,5 +199,6 @@ class DBManager():
     def last_id(self, data_packet):
         if isinstance(data_packet, DataPacket):
             user = data_packet.retrieve_user_id()
-            query = 'SELECT MAX(ID) FROM "{}"'.format(user)
+            table_suffix = data_packet.retrieve_suffix()
+            query = 'SELECT MAX(ID) FROM "{}"'.format(user + table_suffix)
             return(int(self.db_query(query, False)[0][0]) + 1)

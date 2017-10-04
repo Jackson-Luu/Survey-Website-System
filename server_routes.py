@@ -8,8 +8,7 @@ from modules.DatabaseManager import DBManager
 from modules.QuestionsManager import ModifyForm, QuestionForm, read_questions, create_question
 from modules.DataPacket import DataPacket
 
-DBMANAGER_QU = DBManager('questions')
-DBMANAGER_SU = DBManager('surveys')
+DBMANAGER = DBManager('user_information')
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
@@ -54,22 +53,22 @@ def staff_questions():
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
 
-        read_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
-        read_packet = DBMANAGER_QU.retrieve_data(read_packet)
+        read_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE'], "_questions")
+        read_packet = DBMANAGER.retrieve_data(read_packet)
 
         if form.add.data and form.validate():
             # If the form is needed to add data, use it to add data
             # Load up the packet and set it to store the data
-            add_packet = DataPacket('1219', ['ID', 'TEXT', 'TYPE'])
-            add_packet = create_question(add_packet, DBMANAGER_QU.last_id(read_packet),
+            add_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE'], "_questions")
+            add_packet = create_question(add_packet, DBMANAGER.last_id(read_packet),
                                          form.question.data, form.questiontype.data)
-            DBMANAGER_QU.add_data(add_packet)
+            DBMANAGER.add_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         if form_mod.mod.data and form_mod.validate():
             add_packet = create_question(add_packet, form_mod.questionid.data,
                                          form_mod.modquestion.data, form_mod.modquestiontype.data)
-            DBMANAGER_QU.modify_data(add_packet)
+            DBMANAGER.modify_data(add_packet)
             return redirect(url_for('staff_questions'))
 
         questions = read_questions(read_packet)
@@ -83,13 +82,13 @@ def staff_questions():
 @login_required
 def delete_question():
     """ Delete the questions """
-    delete_packet = DataPacket('1219', ['ID'])
+    delete_packet = DataPacket(current_user.get_id(), ['ID'], "_questions")
 
     # From the javascript an Ajax call will be made
     for questionids in request.json['questionids']:
         delete_packet.add_data(questionids)
 
-    DBMANAGER_QU.remove_data(delete_packet)
+    DBMANAGER.remove_data(delete_packet)
 
     return redirect(url_for('staff_questions'))
 
@@ -103,4 +102,10 @@ def logout():
 @APP.route('/staff/survey', methods=['GET', 'POST'])
 @login_required
 def staff_survey():
+    read_packet = DataPacket(current_user.get_id(),
+                             [
+                                 'ID',
+                                 {';foreign;':'SELECTED_IDS', ';suffix;':'_allocated'}
+                             ], '_survey')
+    read_packet = DBMANAGER.retrieve_data(read_packet)
     return render_template('dashboard/dash-surveys.html')

@@ -9,14 +9,14 @@ class DataPacket():
         the database.
     """
 
-    def __init__(self, user_id, query_ids):
+    def __init__(self, user_id, query_ids, suffix=""):
         if isinstance(query_ids, list):
-            # Force convert all of the query_ids into a str to be safe
-            self._query_ids = [str(id) for id in query_ids]
+            self._query_ids = query_ids
             self._query_num = len(query_ids)
 
             self._user_id = user_id  # To denote who owns this packet
             self._query_data = []    # Used to store all of the data
+            self._suffix = suffix
         else:
             raise Exception('query_ids Must be of type list')
 
@@ -31,6 +31,12 @@ class DataPacket():
         final_data = [str(d) for d in data]
 
         self._query_data.append(final_data)
+
+    def set_suffix(self, suffix):
+        self._suffix = suffix
+
+    def retrieve_suffix(self):
+        return self._suffix
 
     def retrieve_user_id(self):
         """ Retrieves the owner's id """
