@@ -144,6 +144,7 @@ class DBManager():
         """ Delete the data from the database """
         query_ids = delete_packet.retrieve_query_id()
         user = delete_packet.retrieve_user_id()
+	table_suffix = delete_packet.retrieve_suffix()
 
         for d in delete_packet.retrieve_data():
             first_run = True
@@ -157,7 +158,7 @@ class DBManager():
                     query = query + ' AND ' + query_ids[x] + ' = ' + d[x]
 
             query = query + ')'
-            query = query.format(user)
+            query = query.format(user + table_suffix)
             print(query)
             self.db_query(query, None)
 
@@ -201,4 +202,7 @@ class DBManager():
             user = data_packet.retrieve_user_id()
             table_suffix = data_packet.retrieve_suffix()
             query = 'SELECT MAX(ID) FROM "{}"'.format(user + table_suffix)
-            return(int(self.db_query(query, False)[0][0]) + 1)
+            try:
+                return(int(self.db_query(query, False)[0][0]) + 1)
+            except TypeError:
+                return 0
