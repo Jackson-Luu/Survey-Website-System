@@ -14,7 +14,7 @@ function delete_questions(){
     };
 
     $.ajax({
-        url: "/staff/questions/ajax-delete-questions",
+        url: "/admin/questions/ajax-delete-questions",
         method: "POST",
         data:JSON.stringify(data, null, '\t'),
         contentType: 'application/json;charset=UTF-8',
