@@ -25,8 +25,8 @@ def survey_homepage():
         if Authenticate(form.username.data, form.password.data):
             if current_user.get_role() == 'student':
                 return redirect(url_for('student_homepage'))
-            elif current_user.get_role() == 'staff':
-                return redirect(url_for('staff_homepage'))
+            elif current_user.get_role() == 'admin':
+                return redirect(url_for('admin_homepage'))
 
     return render_template('index.html', form=form)
 
@@ -38,19 +38,19 @@ def student_homepage():
     else:
         return 'gtfo, u aint cool like a student'
 
-@APP.route('/staff')
+@APP.route('/admin')
 @login_required
-def staff_homepage():
-    if current_user.get_role() == 'staff':
-        return render_template('staff.html')
+def admin_homepage():
+    if current_user.get_role() == 'admin':
+        return render_template('admin.html')
     else:
         return 'gtfo'
 
-@APP.route('/staff/questions', methods=['GET', 'POST'])
+@APP.route('/admin/questions', methods=['GET', 'POST'])
 @login_required
-def staff_questions():
+def admin_questions():
     """ This function will run when the user goes to the url above """
-    if current_user.get_role() == 'staff':
+    if current_user.get_role() == 'admin':
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
 
@@ -64,13 +64,13 @@ def staff_questions():
             add_packet = create_question(add_packet, DBMANAGER.last_id(read_packet),
                                          form.question.data, form.questiontype.data)
             DBMANAGER.add_data(add_packet)
-            return redirect(url_for('staff_questions'))
+            return redirect(url_for('admin_questions'))
 
         if form_mod.mod.data and form_mod.validate():
             add_packet = create_question(add_packet, form_mod.questionid.data,
                                          form_mod.modquestion.data, form_mod.modquestiontype.data)
             DBMANAGER.modify_data(add_packet)
-            return redirect(url_for('staff_questions'))
+            return redirect(url_for('admin_questions'))
 
         questions = read_questions(read_packet)
 
@@ -79,7 +79,7 @@ def staff_questions():
     else:
         return 'gtfo'
 
-@APP.route('/staff/questions/ajax-delete-questions', methods=['GET', 'POST'])
+@APP.route('/admin/questions/ajax-delete-questions', methods=['GET', 'POST'])
 @login_required
 def delete_question():
     """ Delete the questions """
@@ -91,7 +91,7 @@ def delete_question():
 
     DBMANAGER.remove_data(delete_packet)
 
-    return redirect(url_for('staff_questions'))
+    return redirect(url_for('admin_questions'))
 
 @APP.route('/logout')
 @login_required
@@ -100,9 +100,9 @@ def logout():
     logout_user()
     return redirect(url_for('survey_homepage'))
 
-@APP.route('/staff/survey', methods=['GET', 'POST'])
+@APP.route('/admin/survey', methods=['GET', 'POST'])
 @login_required
-def staff_survey():
+def admin_survey():
     survey_form = AddSurveyForm(request.form)
 
     if survey_form.survey_submit.data and survey_form.validate():
