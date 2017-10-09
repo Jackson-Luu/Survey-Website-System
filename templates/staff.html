@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+	{% include "staff/dash-nav-staff.html" %}
+	<div id="dashboard-content">
+	
+		<form action="staff/survey">
+            <input type="submit" value="Review Surveys" />
+        </form>
+		<form action="staff/questions">
+            <input type="submit" value="Manage Questions" />
+        </form>
+	</div>
+{% endblock %}
