@@ -27,6 +27,8 @@ def survey_homepage():
                 return redirect(url_for('student_homepage'))
             elif current_user.get_role() == 'admin':
                 return redirect(url_for('admin_homepage'))
+            elif current_user.get_role() == 'staff':
+                return redirect(url_for('staff_homepage'))
 
     return render_template('index.html', form=form)
 
@@ -45,6 +47,14 @@ def admin_homepage():
         return render_template('admin.html')
     else:
         return 'gtfo'
+        
+@APP.route('/staff')
+@login_required
+def staff_homepage():
+    if current_user.get_role() == 'staff':
+        return render_template('staff.html')
+    else:
+        return 'gtfo, u aint cool like a staff'
 
 @APP.route('/admin/questions', methods=['GET', 'POST'])
 @login_required
@@ -75,6 +85,38 @@ def admin_questions():
         questions = read_questions(read_packet)
 
         return render_template('admin/dash-questions.html',
+                               questions=questions, form=form, form_mod=form_mod)
+    else:
+        return 'gtfo'
+@APP.route('/staff/questions', methods=['GET', 'POST'])
+@login_required
+def staff_questions():
+    """ This function will run when the user goes to the url above """
+    if current_user.get_role() == 'staff':
+        form = QuestionForm(request.form)
+        form_mod = ModifyForm(request.form)
+
+        read_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE'], "_questions")
+        read_packet = DBMANAGER.retrieve_data(read_packet)
+
+        if form.add.data and form.validate():
+            # If the form is needed to add data, use it to add data
+            # Load up the packet and set it to store the data
+            add_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE'], "_questions")
+            add_packet = create_question(add_packet, DBMANAGER.last_id(read_packet),
+                                         form.question.data, form.questiontype.data)
+            DBMANAGER.add_data(add_packet)
+            return redirect(url_for('staff_questions'))
+
+        if form_mod.mod.data and form_mod.validate():
+            add_packet = create_question(add_packet, form_mod.questionid.data,
+                                         form_mod.modquestion.data, form_mod.modquestiontype.data)
+            DBMANAGER.modify_data(add_packet)
+            return redirect(url_for('staff_questions'))
+
+        questions = read_questions(read_packet)
+
+        return render_template('staff/dash-questions-staff.html',
                                questions=questions, form=form, form_mod=form_mod)
     else:
         return 'gtfo'
@@ -112,3 +154,16 @@ def admin_survey():
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
 
     return render_template('admin/dash-surveys.html', survey_form=survey_form)
+    
+@APP.route('/staff/survey', methods=['GET', 'POST'])
+@login_required
+def staff_survey():
+    survey_form = AddSurveyForm(request.form)
+
+    if survey_form.survey_submit.data and survey_form.validate():
+        print(survey_form.survey_name.data)
+
+    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE'], '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+
+    return render_template('staff/dash-surveys-staff.html', survey_form=survey_form)
