@@ -74,7 +74,7 @@ def admin_questions():
 
         questions = read_questions(read_packet)
 
-        return render_template('dashboard/dash-questions.html',
+        return render_template('admin/dash-questions.html',
                                questions=questions, form=form, form_mod=form_mod)
     else:
         return 'gtfo'
@@ -111,4 +111,4 @@ def admin_survey():
     survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE'], '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
 
-    return render_template('dashboard/dash-surveys.html', survey_form=survey_form)
+    return render_template('admin/dash-surveys.html', survey_form=survey_form)
