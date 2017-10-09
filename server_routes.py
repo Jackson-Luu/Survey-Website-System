@@ -7,6 +7,7 @@ from modules.Authenticate import Authenticate, RestoreUser
 from modules.DatabaseManager import DBManager
 from modules.QuestionsManager import ModifyForm, QuestionForm, read_questions, create_question
 from modules.DataPacket import DataPacket
+from modules.SurveyManager import AddSurveyForm
 
 DBMANAGER = DBManager('user_information')
 
@@ -102,10 +103,12 @@ def logout():
 @APP.route('/staff/survey', methods=['GET', 'POST'])
 @login_required
 def staff_survey():
-    read_packet = DataPacket(current_user.get_id(),
-                             [
-                                 'ID',
-                                 {';foreign;':'SELECTED_IDS', ';suffix;':'_allocated'}
-                             ], '_survey')
-    read_packet = DBMANAGER.retrieve_data(read_packet)
-    return render_template('dashboard/dash-surveys.html')
+    survey_form = AddSurveyForm(request.form)
+
+    if survey_form.survey_submit.data and survey_form.validate():
+        print(survey_form.survey_name.data)
+
+    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE'], '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+
+    return render_template('dashboard/dash-surveys.html', survey_form=survey_form)

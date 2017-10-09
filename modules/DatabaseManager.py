@@ -43,27 +43,11 @@ class DBManager():
 
         first_run = True
         for query_id in data_packet.retrieve_query_id():
-            if isinstance(query_id, dict):
-                key_foreign = ';foreign;'
-                key_suffix = ';suffix;'
-                if key_foreign in query_id and key_suffix in query_id:
-                    mapped_data = query_id[key_foreign]
-                    suffix = query_id[key_suffix]
-                    if first_run:
-                        query = query + mapped_data + ' TEXT references "'\
-                                      + data_packet.retrieve_user_id()\
-                                      + suffix + '(' + mapped_data + ')"'
-                        first_run = False
-                    else:
-                        query = query + ', ' + mapped_data + ' TEXT references "'\
-                                      + data_packet.retrieve_user_id()\
-                                      + suffix + '(' + mapped_data + ')"'
+            if first_run:
+                query = query + '{} TEXT PRIMARY KEY NOT NULL'.format(query_id)
+                first_run = False
             else:
-                if first_run:
-                    query = query + '{} TEXT PRIMARY KEY NOT NULL'.format(query_id)
-                    first_run = False
-                else:
-                    query = query + ',{} TEXT NOT NULL'.format(query_id)
+                query = query + ',{} TEXT NOT NULL'.format(query_id)
 
         query = query + ');'
         query = query.format(user + table_suffix)
@@ -144,7 +128,7 @@ class DBManager():
         """ Delete the data from the database """
         query_ids = delete_packet.retrieve_query_id()
         user = delete_packet.retrieve_user_id()
-	table_suffix = delete_packet.retrieve_suffix()
+        table_suffix = delete_packet.retrieve_suffix()
 
         for d in delete_packet.retrieve_data():
             first_run = True
@@ -196,7 +180,7 @@ class DBManager():
             
         else:
             raise Exception("question given is not of type Question")
-	
+
     def last_id(self, data_packet):
         if isinstance(data_packet, DataPacket):
             user = data_packet.retrieve_user_id()
