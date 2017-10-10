@@ -7,9 +7,10 @@ from modules.Authenticate import Authenticate, RestoreUser
 from modules.DatabaseManager import DBManager
 from modules.QuestionsManager import ModifyForm, QuestionForm, read_questions, create_question
 from modules.DataPacket import DataPacket
-from modules.SurveyManager import AddSurveyForm
+from modules.SurveyManager import AddSurveyForm, create_survey, read_surveys
 
 DBMANAGER = DBManager('user_information')
+question_list = []
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
@@ -88,6 +89,71 @@ def admin_questions():
                                questions=questions, form=form, form_mod=form_mod)
     else:
         return 'gtfo'
+
+@APP.route('/admin/survey', methods=['GET', 'POST'])
+@login_required
+def admin_survey():
+    survey_form = AddSurveyForm(request.form)
+
+    survey_packet = DataPacket(current_user.get_id(), ['ID', 'COURSE', 'QUESTIONS'], '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+    surveys = read_surveys(survey_packet)
+
+    if survey_form.survey_submit.data and survey_form.validate():
+        add_packet = DataPacket(current_user.get_id(), ['ID', 'COURSE', 'QUESTIONS'], "_survey")
+
+        add_packet = create_survey(add_packet, DBMANAGER.last_id(survey_packet), survey_form.survey_courses.data, question_list)
+        DBMANAGER.add_data(add_packet)
+        question_list.clear()
+        return redirect(url_for('admin_survey'))
+
+    #Display Question Pool
+    read_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE'], "_questions")
+    read_packet = DBMANAGER.retrieve_data(read_packet)
+    questions = read_questions(read_packet)
+
+    return render_template('admin/dash-surveys.html', survey_form=survey_form, questions=questions, surveys=surveys)
+
+@APP.route('/admin/survey/ajax-delete-questions', methods=['GET', 'POST'])
+@login_required
+def add_survey():
+    for questionids in request.json['questionids']:
+        question_list.append(questionids)
+
+@APP.route('/admin/questions/ajax-delete-questions', methods=['GET', 'POST'])
+@login_required
+def delete_question():
+    """ Delete the questions """
+    delete_packet = DataPacket(current_user.get_id(), ['ID'], "_questions")
+
+    # From the javascript an Ajax call will be made
+    for questionids in request.json['questionids']:
+        delete_packet.add_data(questionids)
+
+    DBMANAGER.remove_data(delete_packet)
+
+    return redirect(url_for('admin_questions'))
+
+@APP.route('/logout')
+@login_required
+def logout():
+    session.pop('_flashes', None)
+    logout_user()
+    return redirect(url_for('survey_homepage'))
+    
+@APP.route('/staff/survey', methods=['GET', 'POST'])
+@login_required
+def staff_survey():
+    survey_form = AddSurveyForm(request.form)
+
+    if survey_form.survey_submit.data and survey_form.validate():
+        print(survey_form.survey_name.data)
+
+    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE'], '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+
+    return render_template('staff/dash-surveys-staff.html', survey_form=survey_form)
+
 @APP.route('/staff/questions', methods=['GET', 'POST'])
 @login_required
 def staff_questions():
@@ -120,50 +186,3 @@ def staff_questions():
                                questions=questions, form=form, form_mod=form_mod)
     else:
         return 'gtfo'
-
-@APP.route('/admin/questions/ajax-delete-questions', methods=['GET', 'POST'])
-@login_required
-def delete_question():
-    """ Delete the questions """
-    delete_packet = DataPacket(current_user.get_id(), ['ID'], "_questions")
-
-    # From the javascript an Ajax call will be made
-    for questionids in request.json['questionids']:
-        delete_packet.add_data(questionids)
-
-    DBMANAGER.remove_data(delete_packet)
-
-    return redirect(url_for('admin_questions'))
-
-@APP.route('/logout')
-@login_required
-def logout():
-    session.pop('_flashes', None)
-    logout_user()
-    return redirect(url_for('survey_homepage'))
-
-@APP.route('/admin/survey', methods=['GET', 'POST'])
-@login_required
-def admin_survey():
-    survey_form = AddSurveyForm(request.form)
-
-    if survey_form.survey_submit.data and survey_form.validate():
-        print(survey_form.survey_name.data)
-
-    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE'], '_survey')
-    survey_packet = DBMANAGER.retrieve_data(survey_packet)
-
-    return render_template('admin/dash-surveys.html', survey_form=survey_form)
-    
-@APP.route('/staff/survey', methods=['GET', 'POST'])
-@login_required
-def staff_survey():
-    survey_form = AddSurveyForm(request.form)
-
-    if survey_form.survey_submit.data and survey_form.validate():
-        print(survey_form.survey_name.data)
-
-    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE'], '_survey')
-    survey_packet = DBMANAGER.retrieve_data(survey_packet)
-
-    return render_template('staff/dash-surveys-staff.html', survey_form=survey_form)
