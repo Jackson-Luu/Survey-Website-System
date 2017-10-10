@@ -15,6 +15,7 @@
                    					<th class="col-md-1">ID</th>
                     				<th class="col-md-7">Course</th>
                     				<th class="col-md-2">Questions</th>
+                                    <th class="col-md-4">State</th>
                 				</tr>
             				</thead>
             				<tbody>
@@ -29,6 +30,9 @@
                 				<td>
                     				{{ survey[2] }}
                 				</td>
+                                <td>
+                                    {{ survey[3] }}
+								</td>
             				</tr>
             				{% endfor %}
             				</tbody>
@@ -49,7 +53,7 @@
                    					<th class="col-md-1">ID</th>
                     				<th class="col-md-7">Question</th>
                     				<th class="col-md-2">Question Type</th>
-                    				<th class="col-md-2">Options</th>
+                    				<th class="col-md-2">Select</th>
                 				</tr>
             				</thead>
             				<tbody>
