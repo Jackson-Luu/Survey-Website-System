@@ -100,14 +100,13 @@ def admin_questions():
 def admin_survey():
     survey_form = AddSurveyForm(request.form)
 
-    survey_packet = DataPacket(current_user.get_id(), ['ID', 'COURSE', 'QUESTIONS'], '_survey')
+    survey_packet = DataPacket(current_user.get_id(), ['ID', 'COURSE', 'QUESTIONS', 'STATE'], '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
     surveys = read_surveys(survey_packet)
 
     if survey_form.survey_submit.data and survey_form.validate():
-        add_packet = DataPacket(current_user.get_id(), ['ID', 'COURSE', 'QUESTIONS'], "_survey")
-
-        add_packet = create_survey(add_packet, DBMANAGER.last_id(survey_packet), survey_form.survey_courses.data, question_list)
+        add_packet = DataPacket(current_user.get_id(), ['ID', 'COURSE', 'QUESTIONS', 'STATE'], "_survey")
+        add_packet = create_survey(add_packet, DBMANAGER.last_id(survey_packet), survey_form.survey_courses.data, question_list, "Review")
         DBMANAGER.add_data(add_packet)
         question_list.clear()
         return redirect(url_for('admin_survey'))
