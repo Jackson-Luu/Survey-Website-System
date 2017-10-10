@@ -26,21 +26,11 @@ def create_survey(data_packet, survey_id, course, question_list, state):
 
     return data_packet
 
-def get_course_tuple():
+def get_course_list():
     information = []
     with open("storage/courses.csv", "r") as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
             row_str = row[0] + ' ' + row[1]
-            information.append(tuple((row_str, row_str)))
+            information.append(row_str)
     return information
-
-retrieved_courses = get_course_tuple()
-
-class AddSurveyForm(Form):
-    survey_name = StringField('survey_name', [validators.Length(max=40)])
-    survey_courses = SelectField(
-        'survey_courses',
-        choices=retrieved_courses
-    )
-    survey_submit = SubmitField('Submit')

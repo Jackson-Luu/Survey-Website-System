@@ -1,117 +1,80 @@
 {% extends "layout.html" %}
 {% block content %}
 {% include "admin/dash-nav.html" %}
-<div id="dashboard-content">
-    <div id="dashboard-surveys">
-        <h3>Current Surveys</h3>
-        {% if survey_form %}
-            <form  method="POST" class="mod-question">
-                <div class="form-group">
-					<div id="dashboard-surveys">
-        				{% if surveys %}
-        				<table class="table table-striped table-bordered">
-            				<thead>
-                				<tr>
-                   					<th class="col-md-1">ID</th>
-                    				<th class="col-md-7">Course</th>
-                    				<th class="col-md-2">Questions</th>
-                                    <th class="col-md-4">Status</th>
-                				</tr>
-            				</thead>
-            				<tbody>
-            				{% for survey in surveys %}
-            				<tr>
-                				<td>
-                    				<div class="table-id">{{ survey[0] }}</div>
-                				</td>
-                				<td>
-                    				{{ survey[1] }}
-                				</td>
-                				<td>
-                    				{{ survey[2] }}
-                				</td>
-                                <td>
-                                    {{ survey[3] }}
-								</td>
-            				</tr>
-            				{% endfor %}
-            				</tbody>
-        				</table>
+	<div id="dashboard-content">
+		<div id="dashboard-surveys">
+			<h3>Add Survey</h3>
+			<form id="add_survey" method="post">
+				<div class="form-group">
+					<label>Course</label>
+					<select id="survey-course" name="survey-course" class="form-control">
+						{% if course_list %}
+						{% for course in course_list %}
+							<option value="{{ course }}">{{ course }}</option>
+						{% endfor %}
 						{% endif %}
-                        </div>
-                    <h3>Add Survey</h3>
-                    <div class="form-group">
-                        <label>Courses</label>
-                        {{ survey_form.survey_courses(class="form-control") }}
-                    </div>
-					<div id="dashboard-questions">
-        				<h3>Question Pool</h3>
-        				{% if questions %}
-        				<table class="table table-striped table-bordered">
-            				<thead>
-                				<tr>
-                   					<th class="col-md-1">ID</th>
-                    				<th class="col-md-7">Question</th>
-                    				<th class="col-md-2">Question Type</th>
-                    				<th class="col-md-2">Select</th>
-                				</tr>
-            				</thead>
-            				<tbody>
-            				{% for question in questions %}
-            				<tr>
-                				<td>
-                    				<div class="table-id">{{ question[0] }}</div>
-                				</td>
-                				<td>
-                    				{{ question[1] }}
-                				</td>
-                				<td>
-                    				{{ question[2] }}
-                				</td>
-                				<td>
-                    				<div id="table-options-section">
-                        			    <input type="checkbox" class="checkbox-del" id="{{ question[0] }}"/>
-                    				</div>
-                				</td>
-            				</tr>
-            				{% endfor %}
-            				</tbody>
-        				</table>
-						{% endif %}
-                        </div>
-                    <div class="form-group">
-                        {{ survey_form.survey_submit(class="btn-color btn-small", onclick="delete_questions()") }}
-                    </div>
-                </div>
-            </form>
-        {% endif %}
-    </div>
-</div>
-<script>
-var deleting = false;
-function delete_questions(){
-    if(deleting) return;
-    deleting = true;
+					</select>
+				</div>
+				<div class="form-group">
+					<input id="survey-submit" name="survey-submit" class="btn-color btn-small" type="submit" value="Add Survey"/>
+				</div>
+			</form>
+			<h3>Survey Pool</h3>
+			{% if surveys %}
+			<table class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th class="col-md-1">ID</th>
+							<th class="col-md-4">Course</th>
+							<th class="col-md-4">State</th>
+							<th class="col-md-3">Options</th>
+						</tr>
+					</thead>
+					<tbody>
+					{% for survey in surveys %}
+					<tr>
+						<td>
+							<div class="table-id">{{ survey[0] }}</div>
+							<input type="checkbox" class="checkbox-del" id="{{ survey[0] }}" hidden/>
+						</td>
+						<td>
+							{{ survey[1] }}
+						</td>
+						<td>
+							{{ survey[3] }}
+						</td>
+						<td>
+							<div id="table-options-section">
+								<a href="/admin/survey/{{ survey[0] }}">Modify</a>
+								<a href="#" onclick="survey_delete()">Delete</a>
+							</div>
+						</td>
+					</tr>
+					{% endfor %}
+					</tbody>
+				</table>
+			{% endif %}
+		</div>
+	</div>
 
-    selected = []
-    $(".checkbox-del").each(function(){
-        var checkbox = $(this)
-        if(checkbox.is(":checked")) selected.push(checkbox.attr("id"));
-    })
+	<script>
+		$("#add_survey").submit(function(event){
+			// Prevent default action
+			event.preventDefault();
 
-    data = {
-        questionids: selected
-    };
+			data = {
+				"survey-course":$("#survey-course").val()
+			};
 
-    $.ajax({
-        url: "/admin/survey/ajax-delete-questions",
-        method: "POST",
-        data:JSON.stringify(data, null, '\t'),
-        contentType: 'application/json;charset=UTF-8',
-        success: function(result) {
-            location.reload();
-        }
-    });
-}
-</script>
+			$.ajax({
+				method: "POST",
+				url: "/admin/survey/add-survey",
+				data:JSON.stringify(data, null, '\t'),
+				contentType: 'application/json;charset=UTF-8',
+				success: function(result) {
+					location.reload();
+				}
+			});
+		});
+	</script>
 {% endblock %}

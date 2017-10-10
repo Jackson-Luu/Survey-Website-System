@@ -3,7 +3,7 @@ function delete_questions(){
     if(deleting) return;
     deleting = true;
 
-    selected = []
+    selected = [];
     $(".checkbox-del").each(function(){
         var checkbox = $(this)
         if(checkbox.is(":checked")) selected.push(checkbox.attr("id"));

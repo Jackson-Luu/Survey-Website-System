@@ -23,15 +23,21 @@ def read_questions(data_packet):
         elif type_enum == QuestionType.RATS:
             type_text = "Text Rating"
 
-        renderable.append([data[0], data[1], type_text])
+        renderable.append([data[0], data[1], type_text, data[3]])
 
     return renderable
 
-def create_question(data_packet, question_id, question_text, question_type):
+def create_question(data_packet, question_id, question_text, question_type, user_type):
     """ We are going to get the raw data and convert it into a DataPacket
         object which we will return
     """
     type_enum = 0 # Default it to the first type
+    question_type = ""
+
+    if user_type == "admin":
+        question_type = "Generic"
+    else:
+        question_type = "Optional"
 
     if question_type == "boolean":
         type_enum = 1
@@ -40,7 +46,7 @@ def create_question(data_packet, question_id, question_text, question_type):
     elif question_type == "rating_text":
         type_enum = 3
 
-    data_packet.add_data([question_id, question_text, type_enum])
+    data_packet.add_data([question_id, question_text, type_enum, question_type])
 
     return data_packet
 

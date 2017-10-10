@@ -153,6 +153,7 @@ class DBManager():
 
             query_ids = data_packet.retrieve_query_id()
             user = data_packet.retrieve_user_id()
+            table_suffix = data_packet.retrieve_suffix()
             query = 'UPDATE "{}" SET '
             first_run = True
 
@@ -173,10 +174,10 @@ class DBManager():
                         query = query + query_ids[x] + ' = ' + d[x]		
                         first_run = False
 
-            query = query.format(user)
+            query = query.format(user + table_suffix)
             print(query)
             for data in data_packet.retrieve_data():
-                self.db_query(query, data)           
+                self.db_query(query, data)     
             
         else:
             raise Exception("question given is not of type Question")
