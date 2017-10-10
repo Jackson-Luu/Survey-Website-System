@@ -10,9 +10,9 @@ from modules.DataPacket import DataPacket
 from modules.SurveyManager import create_survey, read_surveys, get_course_list
 
 DBMANAGER = DBManager('user_information')
-question_list = []
 SURVEY_COL_IDS = ['ID', 'COURSE', 'QUESTION_LIST', 'STATE']
 QUESTION_COL_IDS = ['ID', 'TEXT', 'TYPE', 'STATE']
+METRICS_COL_IDS = ['ID', 'SURVEY_ID', 'QUESTION', 'ANSWER']
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
@@ -38,13 +38,12 @@ def survey_homepage():
 @APP.route('/student')
 @login_required
 def student_homepage():
-    
     """ This function will run when the user goes to the url above """
     if current_user.get_role() == 'student':
         #surveys = read_surveys(data_packet)    
         return render_template('student/dash-nav-student.html')
     else:
-        return 'gtfo, u aint cool like a student'
+        return render_template('unauth.html')
 
 @APP.route('/admin')
 @login_required
@@ -52,7 +51,7 @@ def admin_homepage():
     if current_user.get_role() == 'admin':
         return render_template('admin.html')
     else:
-        return 'gtfo'
+        return render_template('unauth.html')
         
 @APP.route('/staff')
 @login_required
@@ -60,7 +59,7 @@ def staff_homepage():
     if current_user.get_role() == 'staff':
         return render_template('staff.html')
     else:
-        return 'gtfo, u aint cool like a staff'
+        return render_template('unauth.html')
 
 @APP.route('/admin/questions', methods=['GET', 'POST'])
 @login_required
@@ -93,7 +92,7 @@ def admin_questions():
         return render_template('admin/dash-questions.html',
                                questions=questions, form=form, form_mod=form_mod)
     else:
-        return 'gtfo'
+        return render_template('unauth.html')
 
 @APP.route('/admin/survey', methods=['GET', 'POST'])
 @login_required
@@ -230,4 +229,50 @@ def staff_questions():
         return render_template('staff/dash-questions-staff.html',
                                questions=questions, form=form, form_mod=form_mod)
     else:
-        return 'gtfo'
+        return render_template('unauth.html')
+
+@APP.route('/1210-JSP/survey-id=<id>')
+def show_survey(id):
+    question_packet = DataPacket(current_user.get_id(), QUESTION_COL_IDS, "_questions")
+    question_packet = DBMANAGER.retrieve_data(question_packet)
+
+    survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+
+    # Loop through the packet and find the right survey
+    survey_info = ["", "", ""]
+    for survey in survey_packet.retrieve_data():
+        if survey[0] == id:
+            survey_info = survey
+            break
+    
+    question_ids = survey_info[2].split(',')
+    display_info = []
+
+    for question in question_packet.retrieve_data():
+        for qid in question_ids:
+            if qid == question[0]:
+                display_info.append(question)
+
+    return render_template('student/dash-student-survey.html', survey_id=id, display=display_info)
+
+@APP.route('/1210-JSP/submit-survey', methods=['GET', 'POST'])
+def submit_survey():
+    if request.method == 'POST':
+        answers = request.json['survey-answers']
+        survey_id = request.json['survey-id']
+
+        read_packet = DataPacket(current_user.get_id(), METRICS_COL_IDS, '_metrics')
+        read_packet = DBMANAGER.retrieve_data(read_packet)
+
+        metrics_packet = DataPacket(current_user.get_id(), METRICS_COL_IDS, '_metrics')
+
+        unique_id = DBMANAGER.last_id(metrics_packet)
+        for answer in answers:
+            metrics_packet.add_data([unique_id,
+                                     survey_id,
+                                     answer[0],
+                                     answer[1]])
+            unique_id += 1
+        DBMANAGER.add_data(metrics_packet)
+    return "AJAX"

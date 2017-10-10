@@ -25,9 +25,10 @@
 					<thead>
 						<tr>
 							<th class="col-md-1">ID</th>
-							<th class="col-md-4">Course</th>
-							<th class="col-md-4">State</th>
-							<th class="col-md-3">Options</th>
+							<th class="col-md-2">Course</th>
+							<th class="col-md-5">URL</th>
+							<th class="col-md-2">State</th>
+							<th class="col-md-2">Options</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -39,6 +40,9 @@
 						</td>
 						<td>
 							{{ survey[1] }}
+						</td>
+						<td>
+							<input type="text" class="form-control" value="localhost:5000/1210-JSP/survey-id={{ survey[0] }}"/>
 						</td>
 						<td>
 							{{ survey[3] }}

@@ -32,12 +32,12 @@ def create_question(data_packet, question_id, question_text, question_type, user
         object which we will return
     """
     type_enum = 0 # Default it to the first type
-    question_type = ""
+    question_state = ""
 
     if user_type == "admin":
-        question_type = "Generic"
+        question_state = "Generic"
     else:
-        question_type = "Optional"
+        question_state = "Optional"
 
     if question_type == "boolean":
         type_enum = 1
@@ -46,7 +46,7 @@ def create_question(data_packet, question_id, question_text, question_type, user
     elif question_type == "rating_text":
         type_enum = 3
 
-    data_packet.add_data([question_id, question_text, type_enum, question_type])
+    data_packet.add_data([question_id, question_text, type_enum, question_state])
 
     return data_packet
 
