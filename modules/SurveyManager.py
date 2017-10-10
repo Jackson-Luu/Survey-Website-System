@@ -38,6 +38,7 @@ def get_course_tuple():
 retrieved_courses = get_course_tuple()
 
 class AddSurveyForm(Form):
+    survey_name = StringField('survey_name', [validators.Length(max=40)])
     survey_courses = SelectField(
         'survey_courses',
         choices=retrieved_courses

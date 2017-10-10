@@ -111,8 +111,8 @@ def admin_survey():
         question_list.clear()
         return redirect(url_for('admin_survey'))
 
-    #Display Question Pool
-    read_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE'], "_questions")
+    # Display Question Pool
+    read_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE', 'STATE'], "_questions")
     read_packet = DBMANAGER.retrieve_data(read_packet)
     questions = read_questions(read_packet)
 
@@ -151,13 +151,40 @@ def staff_survey():
     survey_form = AddSurveyForm(request.form)
 
     if survey_form.survey_submit.data and survey_form.validate():
-        print(survey_form.survey_name.data)
+        s_name = survey_form.survey_name.data
+        s_course = survey_form.survey_courses.data
 
-    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE'], '_survey')
+        add_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE', 'STATE'], '_survey')
+        add_packet.add_data([DBMANAGER.last_id(add_packet), s_name, s_course])
+
+        DBMANAGER.add_data(add_packet)
+        return redirect(url_for('staff_survey'))
+
+    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE', 'STATE'], '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
 
     return render_template('staff/dash-surveys-staff.html', survey_form=survey_form)
 
+
+@APP.route('/admin/survey/<id>', methods=['GET', 'POST'])
+@login_required
+def staff_mod_survey(id):
+    survey_packet = DataPacket(current_user.get_id(), ['ID', 'NAME', 'COURSE', 'STATE'], '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+
+    question_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE', 'STATE'], "_questions")
+    question_packet = DBMANAGER.retrieve_data(question_packet)
+
+    survey = ["", "", ""]
+
+    for d in survey_packet.retrieve_data():
+        if d[0] == id:
+            survey[0] = d[1]
+            survey[1] = d[2]
+            break
+
+    return render_template('admin/dash-survey-modify.html',
+                           survey=survey, questions=question_packet.retrieve_data())
 @APP.route('/staff/questions', methods=['GET', 'POST'])
 @login_required
 def staff_questions():
