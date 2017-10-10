@@ -13,16 +13,16 @@ def read_surveys(data_packet):
         # Go through each data and translate it into just 3 strings that can
         # be stored in a list
 
-        renderable.append([data[0], data[1], data[2]])
+        renderable.append([data[0], data[1], data[2], data[3]])
 
     return renderable
 
-def create_survey(data_packet, survey_id, course, question_list):
+def create_survey(data_packet, survey_id, course, question_list, state):
     """ We are going to get the raw data and convert it into a DataPacket
         object which we will return
     """
     questions = ','.join(str(x) for x in question_list)
-    data_packet.add_data([survey_id, course, questions])
+    data_packet.add_data([survey_id, course, questions, state])
 
     return data_packet
 
