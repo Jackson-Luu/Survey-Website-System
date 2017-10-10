@@ -31,7 +31,8 @@ def get_course_tuple():
     with open("storage/courses.csv", "r") as csvfile:
         csvreader = csv.reader(csvfile)
         for row in csvreader:
-            information.append(tuple((row[0], row[0])))
+            row_str = row[0] + ' ' + row[1]
+            information.append(tuple((row_str, row_str)))
     return information
 
 retrieved_courses = get_course_tuple()
