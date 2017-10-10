@@ -12,6 +12,18 @@ class UserClass(UserMixin):
     def get_id(self):
         return str(self.username)
 
+def CheckDatabase():
+    user_packet = DataPacket("users", USER_COL_IDS, "")
+    user_packet = DBMANAGER.retrieve_data(user_packet)
+
+    if len(user_packet.retrieve_data()) == 0:
+        with open('storage/passwords.csv') as csvfile:
+            credreader = csv.reader(csvfile)
+            for row in credreader:
+                user_packet.add_data(row)
+
+        DBMANAGER.add_data(user_packet)
+
 def Authenticate(username, password):
     role = CheckCreds(username, password)
     if role != 'INVALID':
@@ -29,12 +41,15 @@ def RestoreUser(username):
     return None
 
 def CheckCreds(username, password):
-    with open('storage/passwords.csv') as csvfile:
-        credreader = csv.reader(csvfile)
-        for row in credreader:
-            if username == row[0]:
-                if password == row[1]:
-                    flash("You have successfully logged in")
-                    return row[2]
+    CheckDatabase()
+    user_packet = DataPacket("users", USER_COL_IDS, "")
+    user_packet = DBMANAGER.retrieve_data(user_packet)
+
+    for row in user_packet.retrieve_data():
+        if username == row[0]:
+            if password == row[1]:
+                flash("You have successfully logged in")
+                return row[2]
+
     flash("Invalid username or password")
     return "INVALID"

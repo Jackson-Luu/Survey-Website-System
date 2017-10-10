@@ -4,18 +4,12 @@ from flask import session
 from modules.head import *
 from modules.LoginForm import LoginForm
 from modules.Authenticate import Authenticate, RestoreUser
-from modules.DatabaseManager import DBManager
 from modules.QuestionsManager import ModifyForm, QuestionForm, read_questions, create_question
-from modules.DataPacket import DataPacket
 from modules.SurveyManager import create_survey, read_surveys, get_course_list
-
-DBMANAGER = DBManager('user_information')
-SURVEY_COL_IDS = ['ID', 'COURSE', 'QUESTION_LIST', 'STATE']
-QUESTION_COL_IDS = ['ID', 'TEXT', 'TYPE', 'STATE']
-METRICS_COL_IDS = ['ID', 'SURVEY_ID', 'QUESTION', 'ANSWER']
 
 @LOGIN_MANAGER.user_loader
 def load_user(user_id):
+    """ This function is called when you load the user """
     return RestoreUser(user_id)
 
 @APP.route('/', methods=['GET', 'POST'])
@@ -38,9 +32,8 @@ def survey_homepage():
 @APP.route('/student')
 @login_required
 def student_homepage():
-    """ This function will run when the user goes to the url above """
+    """ Show the student homepage """
     if current_user.get_role() == 'student':
-        #surveys = read_surveys(data_packet)    
         return render_template('student/dash-nav-student.html')
     else:
         return render_template('unauth.html')
@@ -48,14 +41,16 @@ def student_homepage():
 @APP.route('/admin')
 @login_required
 def admin_homepage():
+    """ Show the administrator home page """
     if current_user.get_role() == 'admin':
         return render_template('admin.html')
     else:
         return render_template('unauth.html')
-        
+
 @APP.route('/staff')
 @login_required
 def staff_homepage():
+    """ Show the staff home page """
     if current_user.get_role() == 'staff':
         return render_template('staff.html')
     else:
@@ -76,14 +71,20 @@ def admin_questions():
             # If the form is needed to add data, use it to add data
             # Load up the packet and set it to store the data
             add_packet = DataPacket(current_user.get_id(), QUESTION_COL_IDS, "_questions")
-            add_packet = create_question(add_packet, DBMANAGER.last_id(read_packet),
-                                         form.question.data, form.questiontype.data, current_user.get_role())
+            add_packet = create_question(add_packet,
+                                         DBMANAGER.last_id(read_packet),
+                                         form.question.data,
+                                         form.questiontype.data,
+                                         current_user.get_role())
             DBMANAGER.add_data(add_packet)
             return redirect(url_for('admin_questions'))
 
         if form_mod.mod.data and form_mod.validate():
-            add_packet = create_question(add_packet, form_mod.questionid.data,
-                                         form_mod.modquestion.data, form_mod.modquestiontype.data, current_user.get_role())
+            add_packet = create_question(add_packet,
+                                         form_mod.questionid.data,
+                                         form_mod.modquestion.data,
+                                         form_mod.modquestiontype.data,
+                                         current_user.get_role())
             DBMANAGER.modify_data(add_packet)
             return redirect(url_for('admin_questions'))
 
@@ -97,6 +98,7 @@ def admin_questions():
 @APP.route('/admin/survey', methods=['GET', 'POST'])
 @login_required
 def admin_survey():
+    """ Show the survey management page to the admin """
     # Display Survey Pool
     survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
@@ -108,11 +110,12 @@ def admin_survey():
 
 @APP.route('/admin/survey/<id>', methods=['GET', 'POST'])
 @login_required
-def admin_mod_survey(id):
+def admin_mod_survey(survey_id):
+    """ This URL will show the survey based on the id given to the URL """
     survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
 
-    question_packet = DataPacket(current_user.get_id(), ['ID', 'TEXT', 'TYPE', 'STATE'], "_questions")
+    question_packet = DataPacket(current_user.get_id(), QUESTION_COL_IDS, "_questions")
     question_packet = DBMANAGER.retrieve_data(question_packet)
 
     questions = read_questions(question_packet)
@@ -120,7 +123,7 @@ def admin_mod_survey(id):
     survey = ["", "", ""]
 
     for d in survey_packet.retrieve_data():
-        if d[0] == id:
+        if d[0] == survey_id:
             survey[0] = d[0]
             survey[1] = d[1]
             break
@@ -245,7 +248,7 @@ def show_survey(id):
         if survey[0] == id:
             survey_info = survey
             break
-    
+
     question_ids = survey_info[2].split(',')
     display_info = []
 
