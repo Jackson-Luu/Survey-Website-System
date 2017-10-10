@@ -36,8 +36,13 @@ def survey_homepage():
 @APP.route('/student')
 @login_required
 def student_homepage():
+    
+    """ This function will run when the user goes to the url above """
     if current_user.get_role() == 'student':
-        return render_template('student.html')
+    
+       
+        #surveys = read_surveys(data_packet)    
+        return render_template('student/dash-nav-student.html')
     else:
         return 'gtfo, u aint cool like a student'
 
