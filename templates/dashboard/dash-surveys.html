@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+{% include "dashboard/dash-nav.html" %}
+<div id="dashboard-content">
+    <div id="dashboard-surveys">
+        <h3>Survey List</h3>
+        {% if survey_form %}
+            <form  method="POST" class="mod-question">
+                <div class="form-group">
+                    <div class="form-group">
+                        <label>Survey Name</label>
+                        {{ survey_form.survey_name(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        <label>Courses</label>
+                        {{ survey_form.survey_courses(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ survey_form.survey_submit(class="btn-color btn-small") }}
+                    </div>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function modify_question(){
+        alert("Coming Soon!!!")
+    }
+</script>
+{% endblock %}

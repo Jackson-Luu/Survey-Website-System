@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div id="dashboard-content">
+    
+    <div class="navigation">
+    <ul>
+        <li><a href="/student">DASHBOARD</a></li>
+        <li><a href="/student/metrics">METRICS</a></li>
+        <li><a href="/logout">LOGOUT</a></li>
+    </ul>
+    </div>
+    
+    <div class="dashboard-subhead">
+        <h3>Select Survey</h3>
+        <button id="btn-add-q" type="button" class="btn-collapse collapsed" data-toggle="collapse" data-target="#view-surveys">
+            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+        </button>
+    </div>
+    <div id="view-surveys" class="collapse">
+        <!-- display surveys 
+
+        {% for n in surveys %}
+        <li>{{n}}</li>
+        {% endfor %}
+        
+        -->
+    </div>
+    <div class="dashboard-subhead">
+        <h3>View Survey Results</h3>
+        <button id="btn-add-q" type="button" class="btn-collapse collapsed" data-toggle="collapse" data-target="#view-surveys-results">
+            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+        </button>
+    </div>
+    <div id="view-surveys-results" class="collapse">
+        <!-- display surveys results
+
+        {% for n in surveys %}
+        <li>{{n}}</li>
+        {% endfor %}
+        
+        -->
+    </div>
+</div>
+
+<script type="text/javascript" src="{{ url_for('static', filename='js/js-delete-q.js') }}"></script>
+
+
+{% endblock %}

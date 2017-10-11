@@ -1,0 +1,165 @@
+{% extends "layout.html" %}
+{% block content %}
+{% include "staff/dash-nav-staff.html" %}
+<style>
+    #survey-container{
+        background-color:#FFFFFF;
+        box-shadow: 0px 0px 10px #555555;
+        width: 1000px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    .question-container{
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .question-container .question-title{
+        font-weight: bold;
+        font-size: 15px;
+    }
+
+    .question-container:not(:first-child){
+        border-top: 1px solid #999999;
+    }
+</style>
+<div id="survey-container">
+    <h3>Survey</h3>
+    {% if display %}
+        {% for d in display %}
+            <div class="question-container">
+                <div id="title-question-{{ loop.index }}" class="question-title">{{ d[1] }}</div>
+                {% if d[2] == "0" %}
+                    <textarea id="question-{{ loop.index }}" class="question-input" class="form-control"></textarea>
+                {% elif d[2] == "1" %}
+                    <div class="radio">
+                        <label>
+                            <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="TRUE"/>
+                            True
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="FALSE"/>
+                            False
+                        </label>
+                    </div>
+                {% elif d[2] == "2" %}
+                    <table>
+                        <tr>
+                            <td class="col-md-2">
+                                <div class="radio">
+                                    <label>
+                                        <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="1"/>
+                                        1
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="col-md-2">
+                                <div class="radio">
+                                    <label>
+                                        <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="2"/>
+                                        2
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="col-md-2">
+                                <div class="radio">
+                                    <label>
+                                        <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="3"/>
+                                        3
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="col-md-2">
+                                <div class="radio">
+                                    <label>
+                                        <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="4"/>
+                                        4
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="col-md-2">
+                                <div class="radio">
+                                    <label>
+                                        <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="5"/>
+                                        5
+                                    </label>
+                                </div>
+                            </td>
+                            <td class="col-md-2">
+                                <div class="radio">
+                                    <label>
+                                        <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="6"/>
+                                        6
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                {% elif d[2] == "3" %}
+                <table>
+                    <tr>
+                        <td class="col-md-2">
+                            <div class="radio">
+                                <label>
+                                    <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="1"/>
+                                    Strongly Disagree
+                                </label>
+                            </div>
+                        </td>
+                        <td class="col-md-2">
+                            <div class="radio">
+                                <label>
+                                    <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="2"/>
+                                    Disagree
+                                </label>
+                            </div>
+                        </td>
+                        <td class="col-md-2">
+                            <div class="radio">
+                                <label>
+                                    <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="3"/>
+                                    Slightly Disagree
+                                </label>
+                            </div>
+                        </td>
+                        <td class="col-md-2">
+                            <div class="radio">
+                                <label>
+                                    <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="4"/>
+                                    Slighty Agree
+                                </label>
+                            </div>
+                        </td>
+                        <td class="col-md-2">
+                            <div class="radio">
+                                <label>
+                                    <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="5"/>
+                                    Agree
+                                </label>
+                            </div>
+                        </td>
+                        <td class="col-md-2">
+                            <div class="radio">
+                                <label>
+                                    <input id="question-{{ loop.index }}" class="question-input" type="radio" name="question-question-{{ loop.index }}" value="6"/>
+                                    Strongly Agree
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <input id="approve-survey" class="btn-color" type="button" onclick="approve_survey()" value="Approve Survey"/>
+    {% endif %}
+</div>
+<script>
+    function approve_survey(){
+        alert("Feature coming soon!!!")
+    }
+</script>
+{% endblock %}

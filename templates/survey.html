@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+{% include "student/dash-nav.html" %}
+<div id="dashboard-content">
+    <div id="dashboard-surveys">
+        <h3> Survey </h3>
+            <form  method="POST" class="mod-question">
+                <div class="form-group">
+					{% if q_bank %}
+    					{% for q in q_bank %}
+      						<h2> {{ q[0] }} </h2>
+							{% if q[1]|int() == 0 %}
+								<input type="text" name="{{loop.index}}">
+	 						{% elif q[1]|int() == 1 %}
+								<input type="radio" name="{{loop.index}}" value=0> True </input>
+                        		<input type="radio" name="{{loop.index}}" value=1> False </input>
+							{% elif q[1]|int() == 2 %}
+								<input type="radio" name="{{loop.index}}" value=0> 1 </input>
+                        		<input type="radio" name="{{loop.index}}" value=1> 2 </input>
+                        		<input type="radio" name="{{loop.index}}" value=2> 3 </input>
+								<input type="radio" name="{{loop.index}}" value=3> 4 </input>
+								<input type="radio" name="{{loop.index}}" value=4> 5 </input>
+							{% else %}
+								<input type="radio" name="{{loop.index}}" value=0> Strongly Disagree </input>
+                        		<input type="radio" name="{{loop.index}}" value=1> Disagree </input>
+                        		<input type="radio" name="{{loop.index}}" value=2> Neutral </input>
+								<input type="radio" name="{{loop.index}}" value=3> Agree </input>
+								<input type="radio" name="{{loop.index}}" value=4> Strongly Agree </input>
+							{% endif %}
+      					{% endfor %}
+      				{%else%}
+      					No questions available.
+      				{% endif %}
+                </div>
+                <div class="form-group">
+					{% if role == 'student' %}
+                    	<button name="btn" value="stu" class="btn-color btn-small"> Submit </button>
+					{% elif role == 'staff' %}
+	                    <button name="btn" value="staff" class="btn-color btn-small"> Approve </button>					
+					{% endif %}
+                </div>
+            </form>
+    </div>
+</div>
+{% endblock %}
