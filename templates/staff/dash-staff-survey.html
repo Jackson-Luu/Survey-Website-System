@@ -25,6 +25,7 @@
     }
 </style>
 <div id="survey-container">
+    <form  method="POST">
     <h3>Survey</h3>
     {% if display %}
         {% for d in display %}
@@ -154,12 +155,10 @@
                 {% endif %}
             </div>
         {% endfor %}
-        <input id="approve-survey" class="btn-color" type="button" onclick="approve_survey()" value="Approve Survey"/>
+        {% if survey_state == "Review" %}
+            <button name="btn" class="btn-color" value="approve"> Approve Survey </button>
+        {% endif %}
     {% endif %}
+    </form>
 </div>
-<script>
-    function approve_survey(){
-        alert("Feature coming soon!!!")
-    }
-</script>
 {% endblock %}
