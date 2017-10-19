@@ -33,7 +33,11 @@
 									</td>
 									<td>
 										<div id="table-options-section">
-											<a href="/staff/survey/{{ survey[0] }}">Review</a>
+                                            {% if survey[3] == "Review" %}
+											    <a href="/staff/survey/{{ survey[0] }}"> Review </a>
+                                            {% elif survey[3] == "Open" %}
+											    <a href="/staff/survey/{{ survey[0] }}"> View </a>  
+                                            {% endif %}                                  
 										</div>
 									</td>
 								</tr>
