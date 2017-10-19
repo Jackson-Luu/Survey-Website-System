@@ -16,7 +16,6 @@ class DBManager():
         # Change the file extension if you want to change how the data is stored
         self._file_ext = '.db'
         self._final_path = 'storage/' + self._file_name + self._file_ext
-        self._load_enrol()
 
     def db_query(self, query, args):
         """ function to execute database queries """
@@ -46,7 +45,7 @@ class DBManager():
         first_run = True
         for query_id in data_packet.retrieve_query_id():
             if first_run:
-                query = query + '{} TEXT PRIMARY KEY NOT NULL'.format(query_id)
+                query = query + '{} INT PRIMARY KEY NOT NULL'.format(query_id)
                 first_run = False
             else:
                 query = query + ',{} TEXT NOT NULL'.format(query_id)
@@ -205,12 +204,6 @@ class DBManager():
         except sqlite3.OperationalError:
             return None
 
-    def _load_enrol(self):
-        with open("storage/enrolments.csv", "r") as csvfile:
-            csvreader = csv.reader(csvfile)
-            try:
-                self.db_query("CREATE TABLE enrolments (Person_ID TEXT, Course TEXT)", False)
-                for row in csvreader:
-                    self.db_query('INSERT INTO enrolments ("{}", "{}") VALUES (?, ?)'.format("Person_ID", "Course"), [row[0], row[1]+' '+row[2]])
-            except sqlite3.OperationalError:
-                pass
+    def sort_metrics(self, table, column):
+        query = 'SELECT * FROM "{}" ORDER BY "{}" ASC'.format(table, column)
+        self.db_query(query, False)

@@ -33,6 +33,7 @@
         {% for d in display %}
             <div class="question-container">
                 <div id="title-question-{{ loop.index }}" class="question-title">{{ d[1] }}</div>
+                <div id="type-question-{{ loop.index }}" class="question-type" hidden>{{ d[2] }}</div>
                 {% if d[2] == "0" %}
                     <textarea id="question-{{ loop.index }}" class="question-input" class="form-control"></textarea>
                 {% elif d[2] == "1" %}
@@ -168,12 +169,13 @@
         $(".question-input").each(function(e){
             if(this.id != previd){
                 previd = this.id;
-                send_data.push([$("#title-" + this.id).text(), $("#" + this.id).val()]);
+                send_data.push([$("#title-" + this.id).text(), $("#" + this.id).val(), $("#type-" + this.id).text()]);
             }
         });
 
         data = {
             "survey-id" : "{{ survey_id }}",
+            "survey-course" : "{{ survey_course }}",
             "survey-answers" : send_data
         };
 

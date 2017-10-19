@@ -9,7 +9,7 @@ DBMANAGER = DBManager('user_information')
 
 SURVEY_COL_IDS = ['ID', 'COURSE', 'QUESTION_LIST', 'STATE']
 QUESTION_COL_IDS = ['ID', 'TEXT', 'TYPE', 'STATE']
-METRICS_COL_IDS = ['ID', 'SURVEY_ID', 'QUESTION', 'ANSWER']
+METRICS_COL_IDS = ['ID', 'QUESTION', 'TYPE', 'ANSWER']
 USER_COL_IDS = ['ID', 'PASSWORD', 'TYPE']
 
 class QuestionType(Enum):

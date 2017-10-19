@@ -205,6 +205,8 @@ def add_survey():
 
         DBMANAGER.add_data(add_survey_packet)
 
+        #todo: remove metrics when survey is updated
+
     return "AJAX-PAGE"
 
 @APP.route('/admin/survey/ajax-update-survey', methods=['GET', 'POST'])
@@ -316,25 +318,53 @@ def show_survey(id):
             if qid == question[0]:
                 display_info.append(question)
 
-    return render_template('student/dash-student-survey.html', survey_id=id, display=display_info)
+    return render_template('student/dash-student-survey.html', survey_id=id, survey_course=survey_info[1], display=display_info)
 
 @APP.route('/1210-JSP/submit-survey', methods=['GET', 'POST'])
 def submit_survey():
     if request.method == 'POST':
         answers = request.json['survey-answers']
-        survey_id = request.json['survey-id']
+        survey_course = request.json['survey-course']
 
-        read_packet = DataPacket(current_user.get_id(), METRICS_COL_IDS, '_metrics')
+        read_packet = DataPacket(survey_course, METRICS_COL_IDS, '_metrics')
         read_packet = DBMANAGER.retrieve_data(read_packet)
 
-        metrics_packet = DataPacket(current_user.get_id(), METRICS_COL_IDS, '_metrics')
+        metrics_packet = DataPacket(survey_course, METRICS_COL_IDS, '_metrics')
 
         unique_id = DBMANAGER.last_id(metrics_packet)
         for answer in answers:
             metrics_packet.add_data([unique_id,
-                                     survey_id,
                                      answer[0],
+                                     answer[2],
                                      answer[1]])
             unique_id += 1
         DBMANAGER.add_data(metrics_packet)
+        DBMANAGER.sort_metrics(survey_course + '_metrics', 'QUESTION')
     return "AJAX"
+
+@APP.route('/admin/metrics')
+def admin_metrics():
+    """Displays admin metrics dashboard"""
+
+    # Display Survey Pool
+    survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+    surveys = read_surveys(survey_packet)
+
+    return render_template('admin/dash-metrics.html', surveys=surveys)
+
+@APP.route('/metrics/<survey_course>')
+def survey_metrics(survey_course):
+    """Displays metrics page for all users"""
+    
+    read_packet = DataPacket(survey_course, METRICS_COL_IDS, "_metrics")
+    read_packet = DBMANAGER.retrieve_data(read_packet)
+    results = read_packet.retrieve_data()
+
+    results_list = []
+    for r in results:
+        results_list.append([r[1], r[2], r[3]])
+
+    print(results_list)
+    #reminder: fix headers later
+    return render_template('metrics.html', results=results_list)
