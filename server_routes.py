@@ -59,7 +59,7 @@ def staff_homepage():
     else:
         return render_template('unauth.html')
 
-@APP.route('/staff/survey/<id>')
+@APP.route('/staff/survey/<id>', methods=["GET", "POST"])
 def staff_show_survey(id):
     question_packet = DataPacket("admin", QUESTION_COL_IDS, "_questions")
     question_packet = DBMANAGER.retrieve_data(question_packet)
@@ -82,7 +82,20 @@ def staff_show_survey(id):
             if qid == question[0]:
                 display_info.append(question)
 
-    return render_template('staff/dash-staff-survey.html', survey_id=id, display=display_info)
+    if request.method == 'POST':
+        if request.form['btn'] == 'approve':
+            mod_survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
+            mod_survey_packet = create_survey(mod_survey_packet,
+                                        survey[0],
+                                        survey[1],
+                                        survey[2],
+                                        "Open")
+
+            DBMANAGER.modify_data(mod_survey_packet)
+
+            return redirect(url_for('staff_homepage'))
+
+    return render_template('staff/dash-staff-survey.html', survey_id=id, display=display_info, survey_state=survey[3])
 
 @APP.route("/student/<survey_id>", methods=["GET", "POST"])
 @login_required
