@@ -333,13 +333,13 @@ def submit_survey():
 
         unique_id = DBMANAGER.last_id(metrics_packet)
         for answer in answers:
+            print(answer)
             metrics_packet.add_data([unique_id,
                                      answer[0],
                                      answer[2],
                                      answer[1]])
             unique_id += 1
         DBMANAGER.add_data(metrics_packet)
-        DBMANAGER.sort_metrics(survey_course + '_metrics', 'QUESTION')
     return "AJAX"
 
 @APP.route('/admin/metrics')
@@ -356,14 +356,31 @@ def admin_metrics():
 @APP.route('/metrics/<survey_course>')
 def survey_metrics(survey_course):
     """Displays metrics page for all users"""
-    
-    read_packet = DataPacket(survey_course, METRICS_COL_IDS, "_metrics")
-    read_packet = DBMANAGER.retrieve_data(read_packet)
-    results = read_packet.retrieve_data()
-
+    results = DBMANAGER.sort_metrics(survey_course + '_metrics', 'QUESTION')
+    #read_packet = DataPacket(survey_course, METRICS_COL_IDS, "_metrics")
+    #read_packet = DBMANAGER.retrieve_data(read_packet)
+    #results = read_packet.retrieve_data()
+    print(results)
     results_list = []
-    for r in results:
-        results_list.append([r[1], r[2], r[3]])
+    q_text = None;
+    if results:
+        for r in results:
+            if int(r[2]) == QuestionType.TEXT.value:
+                if r[1] != q_text:
+                    results_list.append([r[1], r[2], []])
+                results_list[-1][2].append(r[3])             
+            elif int(r[2]) == QuestionType.BOOL.value:
+                if r[1] != q_text:
+                    results_list.append([r[1], r[2], [0]*2])
+                if r[3] == 'TRUE':
+                    results_list[-1][2][0] += 1  
+                else:
+                    results_list[-1][2][1] += 1 
+            else:
+                if r[1] != q_text:
+                    results_list.append([r[1], r[2], [0]*6])
+                results_list[-1][2][int(r[3])] += 1
+            q_text = r[1]
 
     print(results_list)
     #reminder: fix headers later

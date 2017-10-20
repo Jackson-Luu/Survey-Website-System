@@ -206,4 +206,7 @@ class DBManager():
 
     def sort_metrics(self, table, column):
         query = 'SELECT * FROM "{}" ORDER BY "{}" ASC'.format(table, column)
-        self.db_query(query, False)
+        try:
+            return(self.db_query(query, False))
+        except sqlite3.OperationalError:
+            pass
