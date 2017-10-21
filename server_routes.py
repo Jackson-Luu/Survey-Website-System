@@ -53,7 +53,7 @@ def staff_homepage():
     if current_user.get_role() == 'staff':
         survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
-        surveys = read_surveys(survey_packet)
+        surveys = read_surveys(survey_packet, False, DBMANAGER.find("COURSES", "enrolments", "ID", int(current_user.get_id())))
         return render_template('staff.html', surveys=surveys)
     else:
         return render_template('unauth.html')
@@ -142,7 +142,7 @@ def admin_survey():
     # Display Survey Pool
     survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
-    surveys = read_surveys(survey_packet)
+    surveys = read_surveys(survey_packet, True, None)
 
     course_list = get_course_list()
 
@@ -322,7 +322,7 @@ def admin_metrics():
     # Display Survey Pool
     survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
-    surveys = read_surveys(survey_packet)
+    surveys = read_surveys(survey_packet, True, None)
 
     return render_template('admin/dash-metrics.html', surveys=surveys)
 
