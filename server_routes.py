@@ -54,7 +54,6 @@ def staff_homepage():
         survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
         surveys = read_surveys(survey_packet)
-        print(surveys)
         return render_template('staff.html', surveys=surveys)
     else:
         return render_template('unauth.html')
@@ -96,24 +95,6 @@ def staff_show_survey(id):
             return redirect(url_for('staff_homepage'))
 
     return render_template('staff/dash-staff-survey.html', survey_id=id, display=display_info, survey_state=survey[3])
-
-@APP.route("/student/<survey_id>", methods=["GET", "POST"])
-@login_required
-def survey(survey_id):
-    survey_q = DBMANAGER.find('QUESTIONS', 'admin_survey', 'COURSE', survey_id).split(',')
-    questions = []
-    for q in survey_q:
-        questions.append([DBMANAGER.find('TEXT', 'admin_questions', 'ID', q)[0][0], DBMANAGER.find('TYPE', 'admin_questions', 'ID', q)[0][0]])
-
-    if request.method == 'POST':
-        if request.form['btn'] == 'stu':
-            pass
-        elif request.form['btn'] == 'staff':
-            mod_packet = DataPacket(current_user.get_id(), ['ID', 'COURSE', 'QUESTIONS', 'STATE'], '_survey')
-            mod_packet = create_survey(mod_packet, DBMANAGER.find("ID", 'admin_survey', 'COURSE', (survey_id,))[0][0], survey_id,
-                                       survey_q, 'Open')
-            DBMANAGER.modify_data(mod_packet, True)
-    return render_template('survey.html', q_bank=questions, role=current_user.get_role())
 
 @APP.route('/admin/questions', methods=['GET', 'POST'])
 @login_required
@@ -249,14 +230,6 @@ def logout():
     session.pop('_flashes', None)
     logout_user()
     return redirect(url_for('survey_homepage'))
-    
-@APP.route('/staff/survey', methods=['GET', 'POST'])
-@login_required
-def staff_survey():
-    survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
-    survey_packet = DBMANAGER.retrieve_data(survey_packet)
-
-    return render_template('staff/dash-surveys-staff.html')
 
 @APP.route('/staff/questions', methods=['GET', 'POST'])
 @login_required
@@ -360,12 +333,10 @@ def survey_metrics(survey_course):
     #read_packet = DataPacket(survey_course, METRICS_COL_IDS, "_metrics")
     #read_packet = DBMANAGER.retrieve_data(read_packet)
     #results = read_packet.retrieve_data()
-    print(results)
     results_list = []
     q_text = None;
     if results:
         for r in results:
-            print(r)
             if int(r[2]) == QuestionType.TEXT.value:
                 if r[1] != q_text:
                     results_list.append([r[1], r[2], []])
@@ -382,7 +353,5 @@ def survey_metrics(survey_course):
                     results_list.append([r[1], r[2], [0]*6])
                 results_list[-1][2][int(r[3]) - 1] += 1
             q_text = r[1]
-
-    print(results_list)
     #reminder: fix headers later
-    return render_template('metrics.html', results=results_list)
+    return render_template('metrics.html', results=results_list, course=survey_course)

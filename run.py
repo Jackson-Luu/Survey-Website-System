@@ -3,4 +3,4 @@
 """
 from server_routes import APP
 
-APP.run(debug=True)
+APP.run(debug=True, port=5001)

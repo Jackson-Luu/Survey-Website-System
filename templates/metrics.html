@@ -28,7 +28,9 @@
     }
 </style>
 <div id="survey-container">
-    <h3>Survey Metrics</h3>
+    <h2>Survey Metrics</h2>
+    <h5>Course Offering: {{ course }}</h5>
+    <h5>Number of Responses: {{ results | length }}</h5>
     {% if results %}
         {% for r in results %}
             <div class="question-container">

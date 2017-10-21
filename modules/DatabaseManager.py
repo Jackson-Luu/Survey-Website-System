@@ -16,6 +16,7 @@ class DBManager():
         # Change the file extension if you want to change how the data is stored
         self._file_ext = '.db'
         self._final_path = 'storage/' + self._file_name + self._file_ext
+        self.load_enrol()
 
     def db_query(self, query, args):
         """ function to execute database queries """
@@ -193,16 +194,16 @@ class DBManager():
             except TypeError:
                 return 0
 
-    def find(self, field, table, key, value):
-        query = 'SELECT "{}" FROM "{}" WHERE "{}" = ?'.format(field, table, key)
-        try:
-            if field == "QUESTIONS":
-                return self.db_query(query, (value,))[0][0]
-            elif field == "*":
-                return self.db_query(query, (value,))
-            return self.db_query(query, value)
-        except sqlite3.OperationalError:
-            return None
+    def load_enrol(self):
+        with open("storage/enrolments.csv", "r") as csvfile:
+            csvreader = csv.reader(csvfile)
+            try:
+                self.db_query("CREATE TABLE enrolments (ID TEXT, COURSES TEXT)", False)
+                for row in csvreader:
+                    print(row)
+                    self.db_query('INSERT INTO enrolments ("{}", "{}") VALUES (?, ?)'.format("ID", "COURSES"), [row[0], row[1]+' '+row[2]])
+            except sqlite3.OperationalError:
+                pass
 
     def sort_metrics(self, table, column):
         query = 'SELECT * FROM "{}" ORDER BY "{}" ASC'.format(table, column)
