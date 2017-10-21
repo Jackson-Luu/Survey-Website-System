@@ -194,6 +194,18 @@ class DBManager():
             except TypeError:
                 return 0
 
+    def find(self, field, table, key, value):
+        query = 'SELECT "{}" FROM "{}" WHERE "{}" = ?'.format(field, table, key)
+        try:
+            if field == "QUESTIONS":
+                return self.db_query(query, (value,))[0][0]              
+            elif field == "*":
+                return self.db_query(query, (value,))
+            else:                  
+                return self.db_query(query, (value,))                  
+        except sqlite3.OperationalError:         
+            return None
+
     def load_enrol(self):
         with open("storage/enrolments.csv", "r") as csvfile:
             csvreader = csv.reader(csvfile)
