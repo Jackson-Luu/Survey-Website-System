@@ -365,6 +365,7 @@ def survey_metrics(survey_course):
     q_text = None;
     if results:
         for r in results:
+            print(r)
             if int(r[2]) == QuestionType.TEXT.value:
                 if r[1] != q_text:
                     results_list.append([r[1], r[2], []])
@@ -379,7 +380,7 @@ def survey_metrics(survey_course):
             else:
                 if r[1] != q_text:
                     results_list.append([r[1], r[2], [0]*6])
-                results_list[-1][2][int(r[3])] += 1
+                results_list[-1][2][int(r[3]) - 1] += 1
             q_text = r[1]
 
     print(results_list)

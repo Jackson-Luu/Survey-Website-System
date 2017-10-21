@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+ {% extends "layout.html" %}
 {% block content %}
 <style>
     body{
@@ -169,7 +169,11 @@
         $(".question-input").each(function(e){
             if(this.id != previd){
                 previd = this.id;
-                send_data.push([$("#title-" + this.id).text(), $("#" + this.id).val(), $("#type-" + this.id).text()]);
+                if ($("#type-" + this.id).text() == 0){
+                    send_data.push([$("#title-" + this.id).text(), $("#" + this.id).val(), $("#type-" + this.id).text()]);
+                } else {
+                    send_data.push([$("#title-" + this.id).text(), $('input[name=question-' + this.id + ']:checked').val(), $("#type-" + this.id).text()]);
+                }
             }
         });
 
