@@ -27,17 +27,11 @@ def read_questions(data_packet):
 
     return renderable
 
-def create_question(data_packet, question_id, question_text, question_type, user_type):
+def create_question(data_packet, question_id, question_text, question_type, question_state):
     """ We are going to get the raw data and convert it into a DataPacket
         object which we will return
     """
     type_enum = 0 # Default it to the first type
-    question_state = ""
-
-    if user_type == "admin":
-        question_state = "Generic"
-    else:
-        question_state = "Optional"
 
     if question_type == "boolean":
         type_enum = 1
@@ -61,6 +55,13 @@ class QuestionForm(Form):
             ('rating_text', 'Text Rating')
         ]
     )
+    questionstate = SelectField(
+        'Select_Field',
+        choices=[
+            ('Generic', 'Generic'),
+            ('Optional', 'Optional'),
+        ]
+    )
     add = SubmitField('Add')
 
 class ModifyForm(Form):
@@ -73,6 +74,13 @@ class ModifyForm(Form):
             ('text', 'Text'),
             ('rating_int', 'Numeric Rating'),
             ('rating_text', 'Text Rating')\
+        ]
+    )
+    modquestionstate = SelectField(
+        'Select_Field',
+        choices=[
+            ('Generic', 'Generic'),
+            ('Optional', 'Optional'),
         ]
     )
     mod = SubmitField('Modify')
