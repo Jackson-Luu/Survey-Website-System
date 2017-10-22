@@ -24,8 +24,12 @@
                     {{ form.question(class="form-control") }}
                 </div>
                 <div class="form-group">
-                        <label>Question Type</label>
+                        <label>Answer Type</label>
                     {{ form.questiontype(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>Question Type</label>
+                    {{ form.questionstate(class="form-control") }}
                 </div>
                 <div class="form-group">
                     {{ form.add(class="btn-color btn-small") }}
@@ -52,8 +56,12 @@
                         {{ form_mod.modquestion(class="form-control") }}
                     </div>
                     <div class="form-group">
-                            <label>Question Type</label>
+                        <label>Answer Type</label>
                         {{ form_mod.modquestiontype(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        <label>Question Type</label>
+                        {{ form_mod.modquestionstate(class="form-control") }}
                     </div>
                     <div class="form-group">
                         {{ form_mod.mod(class="btn-color btn-small") }}
@@ -122,13 +130,17 @@
                 var questionid = table_data.eq(0).text();
                 var question = table_data.eq(1).text();
                 var questiontype = table_data.eq(2).text();
+                var questionstate = table_data.eq(3).text();
 
                 if (questionid == a){
                     $("#questionid").val(a);
                     question = question.trim()
                     $("#modquestion").val(question);
                     questiontype = questiontype.trim()
-                    $("#modquestiontype").val(questiontype)
+                    $("#modquestiontype").val(questiontype);
+                    questionstate = questionstate.trim()
+                    $("#modquestionstate").val(questionstate)
+                    
 
                     if($("#btn-mod-q").hasClass("collapsed")){
                         $("#btn-mod-q").trigger("click");
