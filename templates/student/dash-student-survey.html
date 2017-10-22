@@ -5,6 +5,12 @@
         background-color:#FFD374;
     }
 
+    textarea{
+        min-width: 100%;
+        max-width: 100%;
+        min-height:100px;
+    }
+
     #survey-container{
         background-color:#FFFFFF;
         box-shadow: 0px 0px 10px #555555;
@@ -189,7 +195,8 @@
             data:JSON.stringify(data, null, '\t'),
             contentType: 'application/json;charset=UTF-8',
             success: function(result) {
-                location.replace("/student");
+                console.log("Working?")
+                location.replace("/");
             }
         });
     }

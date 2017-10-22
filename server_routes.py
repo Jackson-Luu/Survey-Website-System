@@ -16,6 +16,16 @@ def load_user(user_id):
 def survey_homepage():
     """ The function to render the homepage
     """
+
+    # If the user is already logged in, redirect as appropriate
+    if current_user.get_role() == 'student':
+        return redirect(url_for('student_homepage'))
+    elif current_user.get_role() == 'admin':
+        return redirect(url_for('admin_homepage'))
+    elif current_user.get_role() == 'staff':
+        return redirect(url_for('staff_homepage'))
+
+    # If not, show the log in page
     form = LoginForm(request.form)
 
     if request.method == 'POST' and form.validate():
@@ -331,10 +341,10 @@ def submit_survey():
             unique_id += 1
         DBMANAGER.add_data(metrics_packet)
 
-        enrol_packet = DataPacket('enrolments', ENROL_COL_IDS)
-        enrol_packet.add_data([current_user.get_id(), survey_course, "YES"])
+        #enrol_packet = DataPacket('enrolments', ENROL_COL_IDS)
+        #enrol_packet.add_data([current_user.get_id(), survey_course, "YES"])
 
-        DBMANAGER.modify_data(enrol_packet, False)        
+        #DBMANAGER.modify_data(enrol_packet, False)        
     return "AJAX"
 
 @APP.route('/admin/metrics')
@@ -357,9 +367,13 @@ def survey_metrics(survey_course):
     #results = read_packet.retrieve_data()
     results_list = []
     q_text = None;
+    result_count = 0
     if results:
         for r in results:
+            if r[3] == 'None':
+                continue
             if int(r[2]) == QuestionType.TEXT.value:
+                result_count += 1
                 if r[1] != q_text:
                     results_list.append([r[1], r[2], []])
                 results_list[-1][2].append(r[3])             
@@ -376,4 +390,4 @@ def survey_metrics(survey_course):
                 results_list[-1][2][int(r[3]) - 1] += 1
             q_text = r[1]
     #reminder: fix headers later
-    return render_template('metrics.html', results=results_list, course=survey_course)
+    return render_template('metrics.html', results=results_list, course=survey_course, result_count=result_count)
