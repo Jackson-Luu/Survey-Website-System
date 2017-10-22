@@ -36,7 +36,13 @@ def student_homepage():
     if current_user.get_role() == 'student':
         survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
-        surveys = read_surveys(survey_packet, False, DBMANAGER.find("COURSES", "enrolments", "ID", int(current_user.get_id())))
+        
+        courses = []
+        user_entry = DBMANAGER.find('*', "enrolments", "ID", int(current_user.get_id()))
+        for entry in user_entry:
+            if entry[2] != "YES":
+                courses.append([entry[1]])
+        surveys = read_surveys(survey_packet, False, courses)
         return render_template('student/dash-nav-student.html', surveys=surveys)
     else:
         return render_template('unauth.html')
@@ -93,7 +99,7 @@ def staff_show_survey(id):
                                         survey[2],
                                         "Open")
 
-            DBMANAGER.modify_data(mod_survey_packet)
+            DBMANAGER.modify_data(mod_survey_packet, True)
 
             return redirect(url_for('staff_homepage'))
 
@@ -128,7 +134,7 @@ def admin_questions():
                                          form_mod.modquestion.data,
                                          form_mod.modquestiontype.data,
                                          current_user.get_role())
-            DBMANAGER.modify_data(add_packet)
+            DBMANAGER.modify_data(add_packet, True)
             return redirect(url_for('admin_questions'))
 
         questions = read_questions(read_packet)
@@ -208,7 +214,7 @@ def mod_survey():
                                         questions,
                                         "Review")
 
-        DBMANAGER.modify_data(mod_survey_packet)
+        DBMANAGER.modify_data(mod_survey_packet, True)
 
     return "AJAX-PAGE"
 
@@ -261,7 +267,7 @@ def staff_questions():
                                          form_mod.modquestion.data,
                                          form_mod.modquestiontype.data,
                                          current_user.get_role())
-            DBMANAGER.modify_data(add_packet)
+            DBMANAGER.modify_data(add_packet, True)
             return redirect(url_for('staff_questions'))
 
         questions = read_questions(read_packet)
@@ -271,7 +277,7 @@ def staff_questions():
     else:
         return render_template('unauth.html')
 
-@APP.route('/1210-JSP/survey-id=<id>')
+@APP.route('/1210-JSP/survey-id=<id>', methods=['GET', 'POST'])
 @login_required
 def show_survey(id):
     question_packet = DataPacket("admin", QUESTION_COL_IDS, "_questions")
@@ -295,6 +301,9 @@ def show_survey(id):
             if qid == question[0]:
                 display_info.append(question)
 
+    if request.method == 'POST':
+        return redirect(url_for('student_homepage'))
+
     return render_template('student/dash-student-survey.html', survey_id=id, survey_course=survey_info[1], display=display_info)
 
 @APP.route('/1210-JSP/submit-survey', methods=['GET', 'POST'])
@@ -317,6 +326,11 @@ def submit_survey():
                                      answer[1]])
             unique_id += 1
         DBMANAGER.add_data(metrics_packet)
+
+        enrol_packet = DataPacket('enrolments', ENROL_COL_IDS)
+        enrol_packet.add_data([current_user.get_id(), survey_course, "YES"])
+
+        DBMANAGER.modify_data(enrol_packet, False)        
     return "AJAX"
 
 @APP.route('/admin/metrics')

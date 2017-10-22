@@ -11,7 +11,7 @@ SURVEY_COL_IDS = ['ID', 'COURSE', 'QUESTION_LIST', 'STATE']
 QUESTION_COL_IDS = ['ID', 'TEXT', 'TYPE', 'STATE']
 METRICS_COL_IDS = ['ID', 'QUESTION', 'TYPE', 'ANSWER']
 USER_COL_IDS = ['ID', 'PASSWORD', 'TYPE']
-ENROL_COL_IDS = ['ID', 'COURSES']
+ENROL_COL_IDS = ['ID', 'COURSES', 'COMPLETED']
 
 class QuestionType(Enum):
     """ This is is just to standarise the question types across the

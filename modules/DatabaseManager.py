@@ -148,7 +148,7 @@ class DBManager():
             print(query)
             self.db_query(query, None)
 
-    def modify_data(self, data_packet):
+    def modify_data(self, data_packet, unique):
         """Modify the question in the database"""
         if isinstance(data_packet, DataPacket):
             listofquestion = []
@@ -176,6 +176,9 @@ class DBManager():
                         query = query + query_ids[x] + ' = ' + d[x]		
                         first_run = False
 
+            if not unique:
+                query = query + ' AND ' + query_ids[1] + ' = "' + d[1] + '"'
+ 
             query = query.format(user + table_suffix)
             print(query)
             for data in data_packet.retrieve_data():
@@ -195,12 +198,10 @@ class DBManager():
                 return 0
 
     def find(self, field, table, key, value):
-        query = 'SELECT "{}" FROM "{}" WHERE "{}" = ?'.format(field, table, key)
+        query = 'SELECT {} FROM "{}" WHERE "{}" = ?'.format(field, table, key)
         try:
             if field == "QUESTIONS":
-                return self.db_query(query, (value,))[0][0]              
-            elif field == "*":
-                return self.db_query(query, (value,))
+                return self.db_query(query, (value,))[0][0]
             else:                  
                 return self.db_query(query, (value,))                  
         except sqlite3.OperationalError:         
@@ -210,10 +211,10 @@ class DBManager():
         with open("storage/enrolments.csv", "r") as csvfile:
             csvreader = csv.reader(csvfile)
             try:
-                self.db_query("CREATE TABLE enrolments (ID TEXT, COURSES TEXT)", False)
+                self.db_query("CREATE TABLE enrolments (ID TEXT, COURSES TEXT, COMPLETED TEXT)", False)
                 for row in csvreader:
                     print(row)
-                    self.db_query('INSERT INTO enrolments ("{}", "{}") VALUES (?, ?)'.format("ID", "COURSES"), [row[0], row[1]+' '+row[2]])
+                    self.db_query('INSERT INTO enrolments ("{}", "{}", "{}") VALUES (?, ?, ?)'.format("ID", "COURSES", "COMPLETED"), [row[0], row[1]+' '+row[2], "NO"])
             except sqlite3.OperationalError:
                 pass
 
