@@ -10,58 +10,6 @@
             <div class="alert alert-info">{{ message }}</div>
         {% endfor %}
     </div>
-    <div class="dashboard-subhead">
-        <h3>Add Question</h3>
-        <button id="btn-add-q" type="button" class="btn-collapse collapsed" data-toggle="collapse" data-target="#add-question">
-            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-        </button>
-    </div>
-    <div id="add-question" class="collapse">
-        {% if form %}
-            <form  method="POST" name="add-question">
-                <div class="form-group">
-                    <label>Question</label>
-                    {{ form.question(class="form-control") }}
-                </div>
-                <div class="form-group">
-                        <label>Question Type</label>
-                    {{ form.questiontype(class="form-control") }}
-                </div>
-                <div class="form-group">
-                    {{ form.add(class="btn-color btn-small") }}
-                </div>
-            </form>
-        {% endif %}
-    </div>
-    <div class="dashboard-subhead">
-        <h3>Modify Question</h3>
-        <button id="btn-mod-q" type="button" class="btn-collapse collapsed" data-toggle="collapse" data-target="#mod-question">
-            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-        </button>
-    </div>
-    <div id="mod-question" class="collapse">
-        {% if form_mod %}
-            <form  method="POST" class="mod-question">
-                <div class="form-group">
-                    <div class="form-group">
-                        <label>Question ID</label>
-                        {{ form_mod.questionid(class="form-control") }}
-                    </div>
-                    <div class="form-group">
-                        <label>Question</label>
-                        {{ form_mod.modquestion(class="form-control") }}
-                    </div>
-                    <div class="form-group">
-                            <label>Question Type</label>
-                        {{ form_mod.modquestiontype(class="form-control") }}
-                    </div>
-                    <div class="form-group">
-                        {{ form_mod.mod(class="btn-color btn-small") }}
-                    </div>
-                </div>
-            </form>
-        {% endif %}
-    </div>
     <div id="dashboard-questions">
         <h3>Question Pool</h3>
         {% if questions %}

@@ -36,7 +36,9 @@
                                             {% if survey[3] == "Review" %}
 											    <a href="/staff/survey/{{ survey[0] }}"> Review </a>
                                             {% elif survey[3] == "Open" %}
-											    <a href="/staff/survey/{{ survey[0] }}"> View </a>  
+											    <a href="/staff/survey/{{ survey[0] }}"> View </a> 
+                                            {% elif survey[3] == "Closed" %}
+                                                <a href="/metrics/{{ survey[1] }}"> View Metrics </a>  
                                             {% endif %}                                  
 										</div>
 									</td>
