@@ -1,2 +1,18 @@
 import unittest
 import os
+from SurveyManager import *
+from sqlalchemy import exc, orm
+
+class test_create_survey(unittest.TestCase):
+
+  def test_no_input(self):
+  
+  def test_duplicate_survey_id(self):
+  
+  def test_duplicate_course(self):
+  
+  def test_successful_input(self):
+  
+  
+  
+  
