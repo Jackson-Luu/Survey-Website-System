@@ -42,7 +42,7 @@ def survey_homepage():
 @APP.route('/student')
 @login_required
 def student_homepage():
-    """ Show the student homepage """
+    """ Show the student homepage. Display available surveys. """
     if current_user.get_role() == 'student':
         survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
@@ -56,7 +56,6 @@ def student_homepage():
             results.append([entry[1]])
         surveys = read_surveys(survey_packet, False, courses)
         r_surveys = read_surveys(survey_packet, False, results)
-        print(r_surveys)
         return render_template('student/dash-nav-student.html', surveys=surveys, results=r_surveys)
     else:
         return render_template('unauth.html')
@@ -73,6 +72,7 @@ def admin_homepage():
 @APP.route('/staff')
 @login_required
 def staff_homepage():
+    """ Show the staff home page. Display available surveys."""
     if current_user.get_role() == 'staff':
         survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
@@ -82,7 +82,9 @@ def staff_homepage():
         return render_template('unauth.html')
 
 @APP.route('/staff/survey/<id>', methods=["GET", "POST"])
+@login_required
 def staff_show_survey(id):
+    """ Display selected survey for staff user to review.""" 
     question_packet = DataPacket("admin", QUESTION_COL_IDS, "_questions")
     question_packet = DBMANAGER.retrieve_data(question_packet)
 
@@ -122,7 +124,7 @@ def staff_show_survey(id):
 @APP.route('/admin/questions', methods=['GET', 'POST'])
 @login_required
 def admin_questions():
-    """ This function will run when the user goes to the url above """
+    """ Displays the question pool to admin users. Allows them to add/modify/delete a question."""
     if current_user.get_role() == 'admin':
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
@@ -138,7 +140,7 @@ def admin_questions():
                                          DBMANAGER.last_id(read_packet),
                                          form.question.data,
                                          form.questiontype.data,
-                                         current_user.get_role())
+                                         form.questionstate.data)
             DBMANAGER.add_data(add_packet)
             return redirect(url_for('admin_questions'))
 
@@ -147,7 +149,7 @@ def admin_questions():
                                          form_mod.questionid.data,
                                          form_mod.modquestion.data,
                                          form_mod.modquestiontype.data,
-                                         current_user.get_role())
+                                         form.mod.modquestionstate.data)
             DBMANAGER.modify_data(add_packet, True)
             return redirect(url_for('admin_questions'))
 
@@ -208,7 +210,6 @@ def add_survey():
                                         "Review")
 
         DBMANAGER.add_data(add_survey_packet)
-
         #todo: remove metrics when survey is updated
 
     return "AJAX-PAGE"
@@ -257,7 +258,7 @@ def logout():
 @APP.route('/staff/questions', methods=['GET', 'POST'])
 @login_required
 def staff_questions():
-    """ This function will run when the user goes to the url above """
+    """ Displays the optional question pool to staff. """
     if current_user.get_role() == 'staff':
         form = QuestionForm(request.form)
         form_mod = ModifyForm(request.form)
@@ -294,6 +295,7 @@ def staff_questions():
 @APP.route('/1210-JSP/survey-id=<id>', methods=['GET', 'POST'])
 @login_required
 def show_survey(id):
+    """ Displays the survey form to students. """
     question_packet = DataPacket("admin", QUESTION_COL_IDS, "_questions")
     question_packet = DBMANAGER.retrieve_data(question_packet)
 
@@ -321,7 +323,10 @@ def show_survey(id):
     return render_template('student/dash-student-survey.html', survey_id=id, survey_course=survey_info[1], display=display_info)
 
 @APP.route('/1210-JSP/submit-survey', methods=['GET', 'POST'])
+@login_required
 def submit_survey():
+    """ This function runs upon a user submitting a survey. Updates database
+        with survey responses. """
     if request.method == 'POST':
         answers = request.json['survey-answers']
         survey_course = request.json['survey-course']
@@ -349,7 +354,7 @@ def submit_survey():
 
 @APP.route('/admin/metrics')
 def admin_metrics():
-    """Displays admin metrics dashboard"""
+    """ Displays admin metrics dashboard.  """
 
     # Display Survey Pool
     survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
@@ -359,12 +364,11 @@ def admin_metrics():
     return render_template('admin/dash-metrics.html', surveys=surveys)
 
 @APP.route('/metrics/<survey_course>')
+@login_required
 def survey_metrics(survey_course):
-    """Displays metrics page for all users"""
+    """ Displays metrics page for all users. Always visible to admins. Visible
+        to staff and students after survey closes. """
     results = DBMANAGER.sort_metrics(survey_course + '_metrics', 'QUESTION')
-    #read_packet = DataPacket(survey_course, METRICS_COL_IDS, "_metrics")
-    #read_packet = DBMANAGER.retrieve_data(read_packet)
-    #results = read_packet.retrieve_data()
     results_list = []
     q_text = None;
     result_count = 0
