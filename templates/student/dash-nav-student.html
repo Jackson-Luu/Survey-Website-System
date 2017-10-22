@@ -6,7 +6,6 @@
     <div class="navigation">
     <ul>
         <li><a href="/student">DASHBOARD</a></li>
-        <li><a href="/student/metrics">METRICS</a></li>
         <li><a href="/logout">LOGOUT</a></li>
     </ul>
     </div>
@@ -52,13 +51,34 @@
         </button>
     </div>
     <div id="view-surveys-results" class="collapse">
-        <!-- display surveys results
-
-        {% for n in surveys %}
-        <li>{{n}}</li>
-        {% endfor %}
-        
-        -->
+        {% if results %}
+			<table class="table table-striped table-bordered">
+				<thead>
+					<tr>
+						<th class="col-md-4">Course</th>
+						<th class="col-md-3">Results</th>
+					</tr>
+					</thead>
+				<tbody>
+				{% for survey in results %}
+                    <tr>
+       					<td>
+		    				{{ survey[1] }}
+		    			</td>
+		    			<td>
+        				    {% if survey[3] == "Closed" %}
+		    				    <div id="table-options-section">
+		    	            	    <a href="/metrics/{{ survey[1] }}"> View Results </a>                                
+		    				    </div>
+                            {% else %}
+                                N/A
+                            {% endif %}
+		    			</td>
+    	    		</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		{% endif %}
     </div>
 </div>
 

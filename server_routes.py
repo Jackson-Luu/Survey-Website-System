@@ -38,12 +38,16 @@ def student_homepage():
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
         
         courses = []
+        results = []
         user_entry = DBMANAGER.find('*', "enrolments", "ID", int(current_user.get_id()))
         for entry in user_entry:
             if entry[2] != "YES":
                 courses.append([entry[1]])
+            results.append([entry[1]])
         surveys = read_surveys(survey_packet, False, courses)
-        return render_template('student/dash-nav-student.html', surveys=surveys)
+        r_surveys = read_surveys(survey_packet, False, results)
+        print(r_surveys)
+        return render_template('student/dash-nav-student.html', surveys=surveys, results=r_surveys)
     else:
         return render_template('unauth.html')
 
