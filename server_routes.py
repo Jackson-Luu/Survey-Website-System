@@ -34,7 +34,10 @@ def survey_homepage():
 def student_homepage():
     """ Show the student homepage """
     if current_user.get_role() == 'student':
-        return render_template('student/dash-nav-student.html')
+        survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
+        survey_packet = DBMANAGER.retrieve_data(survey_packet)
+        surveys = read_surveys(survey_packet, False, DBMANAGER.find("COURSES", "enrolments", "ID", int(current_user.get_id())))
+        return render_template('student/dash-nav-student.html', surveys=surveys)
     else:
         return render_template('unauth.html')
 
@@ -269,11 +272,12 @@ def staff_questions():
         return render_template('unauth.html')
 
 @APP.route('/1210-JSP/survey-id=<id>')
+@login_required
 def show_survey(id):
-    question_packet = DataPacket(current_user.get_id(), QUESTION_COL_IDS, "_questions")
+    question_packet = DataPacket("admin", QUESTION_COL_IDS, "_questions")
     question_packet = DBMANAGER.retrieve_data(question_packet)
 
-    survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
+    survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
     survey_packet = DBMANAGER.retrieve_data(survey_packet)
 
     # Loop through the packet and find the right survey
