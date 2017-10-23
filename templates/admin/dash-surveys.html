@@ -50,7 +50,7 @@
 						<td>
 							<div id="table-options-section">
 								<a href="/admin/survey/{{ survey[0] }}">Modify</a>
-								<a href="#" onclick="survey_delete()">Delete</a>
+								<a href="#" onclick="survey_delete({{survey[0]}})">Close</a>
 							</div>
 						</td>
 					</tr>
@@ -80,5 +80,22 @@
 				}
 			});
 		});
+
+        function survey_delete(survey_id){
+
+            data = {
+                "survey-id":survey_id
+            };
+
+            $.ajax({
+                url: "/admin/survey/ajax-close-survey",
+                method: "POST",
+                data:JSON.stringify(data, null, '\t'),
+                contentType: 'application/json;charset=UTF-8',
+                success: function(result) {
+                    location.reload();
+                }
+            });
+        }   
 	</script>
 {% endblock %}

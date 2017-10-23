@@ -189,6 +189,22 @@ def admin_survey():
 
     return render_template('admin/dash-surveys.html', surveys=surveys, course_list=course_list)
 
+@APP.route('/admin/survey/ajax-close-survey', methods=['GET', 'POST'])
+@login_required
+def close_survey():
+    """ Close a survey """
+    if request.method == "POST":
+        # From the javascript an Ajax call will be made
+        survey_id = request.json['survey-id']
+        
+        survey = DBMANAGER.find('*', current_user.get_id() + '_survey', "ID", survey_id)
+
+        survey_packet = DataPacket(current_user.get_id(), SURVEY_COL_IDS, '_survey')
+        survey_packet = create_survey(survey_packet, survey[0][0], survey[0][1], survey[0][2], "Closed")
+
+        DBMANAGER.modify_data(survey_packet, True)
+    return "AJAX-PAGE"
+
 @APP.route('/admin/survey/<survey_id>', methods=['GET', 'POST'])
 @login_required
 def admin_mod_survey(survey_id):
