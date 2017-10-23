@@ -58,3 +58,6 @@ class test_create_survey(unittest.TestCase):
     ''' test - question from optional pool is deleted '''
 
     def test_delete_question_optional(self):
+
+if __name__ == '__main__':
+    unittest.main()
