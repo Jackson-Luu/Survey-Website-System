@@ -18,10 +18,10 @@ class test_create_question(unittest.TestCase):
 
     def test_add_question(self):
         add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
-        add_packet.add_data([0, "Hello my honey", "0", "0"])
-        add_packet.add_data([1, "Hello my honey", "0", "0"])
-        add_packet.add_data([2, "Hello my honey", "0", "0"])
-        add_packet.add_data([3, "Hello my honey", "0", "0"])
+        add_packet.add_data([0, "test 1", "0", "0"])
+        add_packet.add_data([1, "test 2", "0", "0"])
+        add_packet.add_data([2, "test 3", "0", "0"])
+        add_packet.add_data([3, "test 4", "0", "0"])
         self.TESTDB.add_data(add_packet)
 
         retrieve_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
@@ -29,20 +29,20 @@ class test_create_question(unittest.TestCase):
 
         actual = retrieve_packet.retrieve_data()
         expected = [
-            ['0', "Hello my honey", "0", "0"],
-            ['1', "Hello my honey", "0", "0"],
-            ['2', "Hello my honey", "0", "0"],
-            ['3', "Hello my honey", "0", "0"]
+            ['0', "test 1", "0", "0"],
+            ['1', "test 2", "0", "0"],
+            ['2', "test 3", "0", "0"],
+            ['3', "test 4", "0", "0"]
         ]
         self.assertListEqual(actual, expected)
 
     @unittest.expectedFailure
     def test_add_fail_questions(self):
         add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
-        add_packet.add_data([0, "Hello my honey", "0", "0"])
-        add_packet.add_data([0, "Hello my honey", "0", "0"])
-        add_packet.add_data([2, "Hello my honey", "0"])
-        add_packet.add_data([3, "Hello my honey", 0, 0])
+        add_packet.add_data([0, "test 1", "0", "0"])
+        add_packet.add_data([0, "test 1", "0", "0"])
+        add_packet.add_data([2, "test 3", "0"])
+        add_packet.add_data([3, "test 4", 0, 0])
         self.TESTDB.add_data(add_packet)
 
     def tearDown(self):
