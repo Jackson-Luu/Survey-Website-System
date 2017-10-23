@@ -224,3 +224,7 @@ class DBManager():
             return(self.db_query(query, False))
         except sqlite3.OperationalError:
             pass
+    
+    def delete_self(self):
+        """ The database self deletes itself """
+        os.remove(self._final_path)

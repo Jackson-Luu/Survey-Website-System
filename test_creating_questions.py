@@ -1,31 +1,34 @@
 ''' testing the creation of various types of questions
 	user story - 6 & 7 '''
-	
+
 import unittest
 import os
+from server import APP, LOGIN_MANAGER
+from flask import session
 from modules.head import *
-from modules.QuestionsManager import *
+from modules.Authenticate import *
+from modules.DataPacket import *
 from sqlalchemy import exc, orm
+
 
 class test_create_question(unittest.TestCase):
 
-	def setUp(self):
-		self.QuestionManager = create_question()
-		
-	''' test - creating a multiple choice question (boolean) '''
-	
-	def test_create_mcq1(self):
-		self.QuestionManager.create_question(data_packet, '1', 'question', 'boolean', 'Generic')
-		self.assertEqual(type_enum, 1)
-	
-	''' test - creating a multiple choice question (numeric rating) ''' 
-	
-	def test_create_mcq2(self):
-		self.QuestionManager.create_question(data_packet, '2', 'question', 'rating_int', 'Generic')
-		self.assertEqual(type_enum, 2)
-		
-	''' test - creating a multiple choice question (text rating) ''' 
-	
-	def test_create_mcq2(self):
-		self.QuestionManager.create_question(data_packet, '3', 'question', 'rating_text', 'Generic')
-		self.asserEqual(type_enum, 3)
+    def setUp(self):
+        self.TESTDB = DBManager("testdb")
+
+    def test_add_question(self):
+        add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
+        add_packet.add_data([0, "Hello my honey", "0", "0"])
+        add_packet.add_data([1, "Hello my honey", "0", "0"])
+        add_packet.add_data([2, "Hello my honey", "0", "0"])
+        add_packet.add_data([3, "Hello my honey", "0", "0"])
+
+    def test_add_fail_questions(self):
+        add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
+        add_packet.add_data([0, "Hello my honey", "0", "0"])
+        add_packet.add_data([0, "Hello my honey", "0", "0"])
+        add_packet.add_data([2, "Hello my honey", "0"])
+        add_packet.add_data([3, "Hello my honey", 0, 0])
+
+if __name__ == '__main__':
+    unittest.main()
