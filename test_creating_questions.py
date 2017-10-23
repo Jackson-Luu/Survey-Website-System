@@ -44,7 +44,7 @@ class test_create_question(unittest.TestCase):
         add_packet.add_data([2, "Hello my honey", "0"])
         add_packet.add_data([3, "Hello my honey", 0, 0])
         self.TESTDB.add_data(add_packet)
-    
+
     def tearDown(self):
         self.TESTDB.delete_self()
 

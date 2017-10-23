@@ -8,56 +8,102 @@ from flask import session
 from modules.head import *
 from modules.Authenticate import *
 from modules.DataPacket import *
+from modules.SurveyManager import *
 from sqlalchemy import exc, orm
 
 
 class test_create_survey(unittest.TestCase):
 
     def setUp(self):
-        self.SurveyManager = create_survey()
+        self.TESTDB = DBManager("testdb")
 
-    ''' test - no input is provided'''
+    def test_create_survey(self):
+        add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
+        add_packet.add_data([0, "In the jungle", "0", "0"])
+        add_packet.add_data([1, "The mightly", "0", "0"])
+        add_packet.add_data([2, "Jungle. The lion", "0", "0"])
+        add_packet.add_data([3, "sleeps tonight", "0", "0"])
+        add_packet.add_data([4, "IN THE JUNGLE", "0", "0"])
+        self.TESTDB.add_data(add_packet)
 
-    def test_no_input(self):
-        with self.asseryRaises(TypeError):
-            self.SurveyManager.create_survey(datapacket, 0, 0, 0, 0)
+        survey_packet = DataPacket("test", SURVEY_COL_IDS, "_surveys")
+        create_survey(survey_packet, 0, "NULL", [0, 1, 2, 3, 4], "Review")
+        create_survey(survey_packet, 1, "NULL", [0, 1], "Review")
+        create_survey(survey_packet, 2, "NULL", [3, 4], "Review")
+        self.TESTDB.add_data(survey_packet)
 
-    ''' test - correct input is provided'''
+        read_survey_packet = DataPacket("test", SURVEY_COL_IDS, "_surveys")
+        self.TESTDB.retrieve_data(read_survey_packet)
 
-    def test_successful_input(self):
-        self.SurveyManager.create_survey(
-            datapacket, 1, 'Comp9844', '''quesionlist''', '''state''')
+        actual = read_survey_packet.retrieve_data()
+        expected = [
+            ["0", "NULL", "0,1,2,3,4", "Review"],
+            ["1", "NULL", "0,1", "Review"],
+            ["2", "NULL", "3,4", "Review"]
+        ]
+        self.assertListEqual(actual, expected)
 
-    ''' test - a duplicate id is provided'''
+    def test_delete_survey(self):
+        add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
+        add_packet.add_data([0, "In the jungle", "0", "0"])
+        add_packet.add_data([1, "The mightly", "0", "0"])
+        add_packet.add_data([2, "Jungle. The lion", "0", "0"])
+        add_packet.add_data([3, "sleeps tonight", "0", "0"])
+        add_packet.add_data([4, "IN THE JUNGLE", "0", "0"])
+        self.TESTDB.add_data(add_packet)
 
-    def test_duplicate_survey_id(self):
-        self.SurveyManager.create_survey(
-            datapacket, 1, 'Seng4920', '''quesionlist''', '''state''')
-        with self.assertRaises(exc.IntegrityError):
-            self.SurveyManager.create_survey(
-                datapacket, 1, 'Seng4920', '''quesionlist''', '''state''')
+        survey_packet = DataPacket("test", SURVEY_COL_IDS, "_surveys")
+        create_survey(survey_packet, 0, "NULL", [0, 1, 2, 3, 4], "Review")
+        create_survey(survey_packet, 1, "NULL", [0, 1], "Review")
+        create_survey(survey_packet, 2, "NULL", [3, 4], "Review")
+        self.TESTDB.add_data(survey_packet)
 
-    ''' test - duplicate course offering is provided'''
+        delete_packet = DataPacket("test", ["ID"], "_surveys")
+        delete_packet.add_data(["0"])
+        self.TESTDB.remove_data(delete_packet)
 
-    def test_duplicate_course(self):
-        self.SurveyManager.create_survey(
-            datapacket, 2, 'Comp9844', '''quesionlist''', '''state''')
-        with self.assertRaises(exc.IntegrityError):
-            self.SurveyManager.create_survey(
-                datapacket, 2, 'Comp9844', '''quesionlist''', '''state''')
+        read_survey_packet = DataPacket("test", SURVEY_COL_IDS, "_surveys")
+        self.TESTDB.retrieve_data(read_survey_packet)
 
-    ''' test - question from mandatory pool is provided'''
+        actual = read_survey_packet.retrieve_data()
+        expected = [
+            ["1", "NULL", "0,1", "Review"],
+            ["2", "NULL", "3,4", "Review"]
+        ]
+        self.assertListEqual(actual, expected)
+    
+    def test_remove_question(self):
+        add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
+        add_packet.add_data([0, "In the jungle", "0", "0"])
+        add_packet.add_data([1, "The mightly", "0", "0"])
+        add_packet.add_data([2, "Jungle. The lion", "0", "0"])
+        add_packet.add_data([3, "sleeps tonight", "0", "0"])
+        add_packet.add_data([4, "IN THE JUNGLE", "0", "0"])
+        self.TESTDB.add_data(add_packet)
 
-    def test_add_question_mandatory(self):
-    ''' test - question from optional pool is provided'''
+        survey_packet = DataPacket("test", SURVEY_COL_IDS, "_surveys")
+        create_survey(survey_packet, 0, "NULL", [0, 1, 2, 3, 4], "Review")
+        create_survey(survey_packet, 1, "NULL", [0, 1], "Review")
+        create_survey(survey_packet, 2, "NULL", [3, 4], "Review")
+        self.TESTDB.add_data(survey_packet)
 
-    def test_add_question_optional(self):
-    ''' test - question from mandatory pool is deleted'''
+        delete_packet = DataPacket("test", ["ID"], "_questions")
+        delete_packet.add_data(["0"])
+        self.TESTDB.remove_data(delete_packet)
 
-    def test_delete_question_mandatory(self):
-    ''' test - question from optional pool is deleted '''
+        read_survey_packet = DataPacket("test", SURVEY_COL_IDS, "_surveys")
+        self.TESTDB.retrieve_data(read_survey_packet)
 
-    def test_delete_question_optional(self):
+        actual = read_survey_packet.retrieve_data()
+        expected = [
+            ["0", "NULL", "0,1,2,3,4", "Review"],
+            ["1", "NULL", "0,1", "Review"],
+            ["2", "NULL", "3,4", "Review"]
+        ]
+        self.assertListEqual(actual, expected)
+
+    def tearDown(self):
+        self.TESTDB.delete_self()
 
 if __name__ == '__main__':
     unittest.main()
