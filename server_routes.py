@@ -77,8 +77,8 @@ def staff_homepage():
     if current_user.get_role() == 'staff':
         survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
-        surveys = read_surveys(survey_packet, False, DBMANAGER.find("COURSES", "enrolments", "ID", int(current_user.get_id())))
-        return render_template('staff.html', surveys=surveys)
+
+        return render_template('staff.html', surveys=survey_packet.retrieve_data())
     else:
         return render_template('unauth.html')
 
@@ -121,6 +121,21 @@ def staff_show_survey(id):
             return redirect(url_for('staff_homepage'))
 
     return render_template('staff/dash-staff-survey.html', survey_id=id, display=display_info, survey_state=survey[3])
+
+@APP.route('/staff/questions/ajax-add-questions', methods=['GET', 'POST'])
+@login_required
+def staff_add_question():
+    """ Delete the questions """
+    if request.method == "POST":
+        question = request.json["question"]
+        question_type = request.json["question_type"]
+
+        add_packet = DataPacket("admin", QUESTION_COL_IDS, "_questions")
+        add_packet.add_data([DBMANAGER.last_id(add_packet), question, question_type, "Optional"])
+
+        DBMANAGER.add_data(add_packet)
+
+    return "AJAX-PAGE"
 
 @APP.route('/admin/questions', methods=['GET', 'POST'])
 @login_required
@@ -261,35 +276,11 @@ def logout():
 def staff_questions():
     """ Displays the optional question pool to staff. """
     if current_user.get_role() == 'staff':
-        form = QuestionForm(request.form)
-        form_mod = ModifyForm(request.form)
-
-        read_packet = DataPacket(current_user.get_id(), QUESTION_COL_IDS, "_questions")
+        read_packet = DataPacket("admin", QUESTION_COL_IDS, "_questions")
         read_packet = DBMANAGER.retrieve_data(read_packet)
 
-        if form.add.data and form.validate():
-            # If the form is needed to add data, use it to add data
-            # Load up the packet and set it to store the data
-            add_packet = DataPacket(current_user.get_id(), QUESTION_COL_IDS, "_questions")
-            add_packet = create_question(add_packet, DBMANAGER.last_id(read_packet),
-                                         form.question.data,
-                                         form.questiontype.data,
-                                         current_user.get_role())
-            DBMANAGER.add_data(add_packet)
-            return redirect(url_for('staff_questions'))
-
-        if form_mod.mod.data and form_mod.validate():
-            add_packet = create_question(add_packet, form_mod.questionid.data,
-                                         form_mod.modquestion.data,
-                                         form_mod.modquestiontype.data,
-                                         current_user.get_role())
-            DBMANAGER.modify_data(add_packet, True)
-            return redirect(url_for('staff_questions'))
-
-        questions = read_questions(read_packet)
-
         return render_template('staff/dash-questions-staff.html',
-                               questions=questions, form=form, form_mod=form_mod)
+                               questions=read_packet.retrieve_data())
     else:
         return render_template('unauth.html')
 

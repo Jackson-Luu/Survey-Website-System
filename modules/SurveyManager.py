@@ -41,3 +41,8 @@ def get_course_list():
             row_str = row[0] + ' ' + row[1]
             information.append(row_str)
     return information
+
+def add_course(course):
+    with open("storage/courses.csv", "a") as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.write(course)

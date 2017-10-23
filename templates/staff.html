@@ -3,53 +3,52 @@
 {% include "staff/dash-nav-staff.html" %}
 <div id="dashboard-content">
     <div id="dashboard-surveys">
-        <h3>Courses and Surveys</h3>
-            <form  method="POST" class="mod-question">
-                <div class="form-group">
-					<div id="dashboard-surveys">
-        				<h3>Survey Pool</h3>
-						{% if surveys %}
-							<table class="table table-striped table-bordered">
-								<thead>
-									<tr>
-										<th class="col-md-1">ID</th>
-										<th class="col-md-4">Course</th>
-										<th class="col-md-4">State</th>
-										<th class="col-md-3">Options</th>
-									</tr>
-								</thead>
-								<tbody>
-								{% for survey in surveys %}
+		<form  method="POST" class="mod-question">
+			<div class="form-group">
+				<div id="dashboard-surveys">
+					<h3>Survey Pool</h3>
+					{% if surveys %}
+						<table class="table table-striped table-bordered">
+							<thead>
 								<tr>
-									<td>
-										<div class="table-id">{{ survey[0] }}</div>
-										<input type="checkbox" class="checkbox-del" id="{{ survey[0] }}" hidden/>
-									</td>
-									<td>
-										{{ survey[1] }}
-									</td>
-									<td>
-										{{ survey[3] }}
-									</td>
-									<td>
-										<div id="table-options-section">
-                                            {% if survey[3] == "Review" %}
-											    <a href="/staff/survey/{{ survey[0] }}"> Review </a>
-                                            {% elif survey[3] == "Open" %}
-											    <a href="/staff/survey/{{ survey[0] }}"> View </a> 
-                                            {% elif survey[3] == "Closed" %}
-                                                <a href="/metrics/{{ survey[1] }}"> View Metrics </a>  
-                                            {% endif %}                                  
-										</div>
-									</td>
+									<th class="col-md-1">ID</th>
+									<th class="col-md-4">Course</th>
+									<th class="col-md-4">State</th>
+									<th class="col-md-3">Options</th>
 								</tr>
-								{% endfor %}
-								</tbody>
-							</table>
-						{% endif %}
-                    </div>
-                </div>
-            </form>
+							</thead>
+							<tbody>
+							{% for survey in surveys %}
+							<tr>
+								<td>
+									<div class="table-id">{{ survey[0] }}</div>
+									<input type="checkbox" class="checkbox-del" id="{{ survey[0] }}" hidden/>
+								</td>
+								<td>
+									{{ survey[1] }}
+								</td>
+								<td>
+									{{ survey[3] }}
+								</td>
+								<td>
+									<div id="table-options-section">
+										{% if survey[3] == "Review" %}
+											<a href="/staff/survey/{{ survey[0] }}"> Review </a>
+										{% elif survey[3] == "Open" %}
+											<a href="/staff/survey/{{ survey[0] }}"> View </a> 
+										{% elif survey[3] == "Closed" %}
+											<a href="/metrics/{{ survey[1] }}"> View Metrics </a>  
+										{% endif %}                                  
+									</div>
+								</td>
+							</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					{% endif %}
+				</div>
+			</div>
+		</form>
     </div>
 </div>
 {% endblock %}

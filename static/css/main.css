@@ -51,16 +51,22 @@ body{
     padding: 0px;
     margin: 0px auto;
     width: 1000px;
+    align-items: center;
+}
+
+.navigation li:first-child{
+    border-right: 2px solid #FFFFFF;
+    padding-right: 20px;
 }
 
 .navigation li{
     margin-left: 10px;
     margin-right: 10px;
+    font-size: 17px;
+    font-weight:bold;
 }
 
 .navigation ul li a{
-    font-weight:bold;
-    font-size: 17px;
     color: #00479D;
 }
 
