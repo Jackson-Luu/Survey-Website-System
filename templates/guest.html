@@ -25,10 +25,19 @@
 					{{ form.password.label }}:
 					{{ form.password(class="form-control") }}
 				</div>
+            	<div class="form-group">
+			        <label>Course</label>
+					<select id="survey-course" name="survey-course" class="form-control">
+						{% if course_list %}
+						{% for course in course_list %}
+							<option id="course" value="{{ course }}">{{ course }}</option>
+						{% endfor %}
+						{% endif %}
+					</select>
+                </div>
 				<div class="form-group">
 					<input class="btn-color" type="Submit" value="SUBMIT"/>
 				</div>
-                <a href="/guest"> Register a Guest </a>
 			</form>
 		</div>
 		<div id="index-footer-wrapper">

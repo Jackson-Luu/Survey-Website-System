@@ -22,7 +22,7 @@ class DBManager():
         """ function to execute database queries """
         connection = sqlite3.connect(self._final_path)
         cursorObj = connection.cursor()
-
+        print(query)
         if not args:
             result = cursorObj.execute(query)
         else:
@@ -180,7 +180,6 @@ class DBManager():
                 query = query + ' AND ' + query_ids[1] + ' = "' + d[1] + '"'
  
             query = query.format(user + table_suffix)
-            print(query)
             for data in data_packet.retrieve_data():
                 self.db_query(query, data)     
             
@@ -217,6 +216,9 @@ class DBManager():
                     self.db_query('INSERT INTO enrolments ("{}", "{}", "{}") VALUES (?, ?, ?)'.format("ID", "COURSES", "COMPLETED"), [row[0], row[1]+' '+row[2], "NO"])
             except sqlite3.OperationalError:
                 pass
+
+    def register(self, guest):
+        self.db_query('UPDATE users SET TYPE = "guest" WHERE ID = ?', guest)
 
     def sort_metrics(self, table, column):
         query = 'SELECT * FROM "{}" ORDER BY "{}" ASC'.format(table, column)

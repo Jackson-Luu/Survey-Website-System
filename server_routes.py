@@ -40,6 +40,26 @@ def survey_homepage():
 
     return render_template('index.html', form=form)
 
+@APP.route('/guest', methods=['GET', 'POST'])
+def guest():
+    """ The function to render the homepage
+    """
+    # If not, show the log in page
+    form = LoginForm(request.form)
+
+    survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
+    survey_packet = DBMANAGER.retrieve_data(survey_packet)
+    surveys = read_surveys(survey_packet, True, None)
+
+    course_list = get_course_list()
+    
+    if request.method == 'POST' and form.validate():
+        user_packet = DataPacket('users', USER_COL_IDS, '')
+        user_packet.add_data([form.username.data, form.password.data, "pending"])
+        DBMANAGER.add_data(user_packet)           
+
+    return render_template('guest.html', form=form, course_list=course_list)
+
 @APP.route('/student')
 @login_required
 def student_homepage():
@@ -188,6 +208,24 @@ def admin_survey():
     course_list = get_course_list()
 
     return render_template('admin/dash-surveys.html', surveys=surveys, course_list=course_list)
+
+@APP.route('/admin/guest', methods=['GET', 'POST'])
+@login_required
+def admin_guest():
+    """ Show the survey management page to the admin """
+    # Display Survey Pool
+    guests = DBMANAGER.find('*', "users", "TYPE", "pending")
+
+    if request.method == "POST":
+        guest = int(request.form["approve"])
+        DBMANAGER.register([guests[guest][0]])
+
+        enrol_packet = DataPacket('enrolments', ENROL_COL_IDS)
+        enrol_packet.add_data([guests[guest][0], survey_course, "NO"])
+
+        DBMANAGER.add_data(enrol_packet)
+        
+    return render_template('admin/dash-guest.html', guests=guests)
 
 @APP.route('/admin/survey/ajax-close-survey', methods=['GET', 'POST'])
 @login_required
