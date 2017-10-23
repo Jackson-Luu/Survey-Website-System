@@ -18,12 +18,13 @@ def survey_homepage():
     """
 
     # If the user is already logged in, redirect as appropriate
-    if current_user.get_role() == 'student':
-        return redirect(url_for('student_homepage'))
-    elif current_user.get_role() == 'admin':
-        return redirect(url_for('admin_homepage'))
-    elif current_user.get_role() == 'staff':
-        return redirect(url_for('staff_homepage'))
+    if "get_role" in dir(current_user):
+        if current_user.get_role() == 'student':
+            return redirect(url_for('student_homepage'))
+        elif current_user.get_role() == 'admin':
+            return redirect(url_for('admin_homepage'))
+        elif current_user.get_role() == 'staff':
+            return redirect(url_for('staff_homepage'))
 
     # If not, show the log in page
     form = LoginForm(request.form)
