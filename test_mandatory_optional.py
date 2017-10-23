@@ -3,7 +3,7 @@
 
 import unittest
 import os
-from QuestionsManager import *
+from modules.QuestionsManager import *
 from sqlalchemy import exc, orm
 
 class Test_create_question(unittest.TestCase):
