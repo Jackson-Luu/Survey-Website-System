@@ -1,4 +1,5 @@
 # Survey flask server file
+import csv
 from server import APP, LOGIN_MANAGER
 from flask import session
 from modules.head import *
@@ -37,6 +38,8 @@ def survey_homepage():
                 return redirect(url_for('admin_homepage'))
             elif current_user.get_role() == 'staff':
                 return redirect(url_for('staff_homepage'))
+            elif current_user.get_role() == 'guest':
+                return redirect(url_for('student_homepage'))
 
     return render_template('index.html', form=form)
 
@@ -56,7 +59,13 @@ def guest():
     if request.method == 'POST' and form.validate():
         user_packet = DataPacket('users', USER_COL_IDS, '')
         user_packet.add_data([form.username.data, form.password.data, "pending"])
-        DBMANAGER.add_data(user_packet)           
+        DBMANAGER.add_data(user_packet)
+
+        enrol_packet = DataPacket('enrolments', ENROL_COL_IDS)
+        enrol_packet.add_data([form.username.data, request.form["survey-course"], "NO"])
+        DBMANAGER.add_data(enrol_packet)
+
+        return redirect(url_for('survey_homepage'))
 
     return render_template('guest.html', form=form, course_list=course_list)
 
@@ -64,7 +73,8 @@ def guest():
 @login_required
 def student_homepage():
     """ Show the student homepage. Display available surveys. """
-    if current_user.get_role() == 'student':
+    print(current_user.get_role())
+    if current_user.get_role() == 'student' or current_user.get_role() == 'guest':
         survey_packet = DataPacket("admin", SURVEY_COL_IDS, '_survey')
         survey_packet = DBMANAGER.retrieve_data(survey_packet)
         
@@ -220,10 +230,9 @@ def admin_guest():
         guest = int(request.form["approve"])
         DBMANAGER.register([guests[guest][0]])
 
-        enrol_packet = DataPacket('enrolments', ENROL_COL_IDS)
-        enrol_packet.add_data([guests[guest][0], survey_course, "NO"])
-
-        DBMANAGER.add_data(enrol_packet)
+        with open("storage/passwords.csv", "a") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerow([guests[guest][0], guests[guest][1], "guest"])
         
     return render_template('admin/dash-guest.html', guests=guests)
 
