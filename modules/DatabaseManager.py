@@ -11,12 +11,13 @@ from modules.head import *
 
 class DBManager():
     """ The class that will create a database manager """
-    def __init__(self, file_name):
+    def __init__(self, file_name, skip_enrol=False):
         self._file_name = file_name
         # Change the file extension if you want to change how the data is stored
         self._file_ext = '.db'
         self._final_path = 'storage/' + self._file_name + self._file_ext
-        self.load_enrol()
+        if not skip_enrol:
+            self.load_enrol()
 
     def db_query(self, query, args):
         """ function to execute database queries """

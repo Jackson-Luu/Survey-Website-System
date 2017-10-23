@@ -14,7 +14,7 @@ from sqlalchemy import exc, orm
 class test_create_question(unittest.TestCase):
 
     def setUp(self):
-        self.TESTDB = DBManager("testdb")
+        self.TESTDB = DBManager("testdb", True)
 
     def test_add_question(self):
         add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")

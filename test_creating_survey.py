@@ -15,7 +15,7 @@ from sqlalchemy import exc, orm
 class test_create_survey(unittest.TestCase):
 
     def setUp(self):
-        self.TESTDB = DBManager("testdb")
+        self.TESTDB = DBManager("testdb", True)
 
     def test_create_survey(self):
         add_packet = DataPacket("test", QUESTION_COL_IDS, "_questions")
