@@ -23,7 +23,6 @@ class DBManager():
         """ function to execute database queries """
         connection = sqlite3.connect(self._final_path)
         cursorObj = connection.cursor()
-        print(query)
         if not args:
             result = cursorObj.execute(query)
         else:
@@ -146,7 +145,6 @@ class DBManager():
 
             query = query + ')'
             query = query.format(user + table_suffix)
-            print(query)
             self.db_query(query, None)
 
     def modify_data(self, data_packet, unique):
@@ -213,7 +211,6 @@ class DBManager():
             try:
                 self.db_query("CREATE TABLE enrolments (ID TEXT, COURSES TEXT, COMPLETED TEXT)", False)
                 for row in csvreader:
-                    print(row)
                     self.db_query('INSERT INTO enrolments ("{}", "{}", "{}") VALUES (?, ?, ?)'.format("ID", "COURSES", "COMPLETED"), [row[0], row[1]+' '+row[2], "NO"])
             except sqlite3.OperationalError:
                 pass
