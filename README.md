@@ -4,4 +4,6 @@ This project is a web survey system designed for universities that allows studen
 
 Written using Python, Flask, Javascript, Jinja 2, HTML and CSS.
 
-Also contains a variety of UML diagrams used during the software cycle in the documentation folders, as well as unit tests.
+Storage folder contains some preset input data for testing, as well as the SQLite database folder.
+Modules contains the back-end python code, templates contains the webpage templates.
+A variety of UML diagrams used during the software cycle are in the documentation folders.
