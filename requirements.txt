@@ -5,7 +5,7 @@ cloud-init==0.7.9
 command-not-found==0.3
 configobj==5.0.6
 cryptography==1.2.3
-Django==1.11.5
+Django==1.11.28
 Flask==0.12.2
 Flask-Login==0.4.0
 Flask-WTF==0.14.2
